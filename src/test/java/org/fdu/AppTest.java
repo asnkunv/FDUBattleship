@@ -30,4 +30,9 @@ class AppTest {
         App app = new App();
         assertEquals("FDU Battleship v1.0", app.uselessMethodGetGameTitle());
     }
+
+    @Test
+    void testMain() {
+        App.main(new String[]{});
+    }
 }
