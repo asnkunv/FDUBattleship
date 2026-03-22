@@ -19,13 +19,6 @@ class AppTest {
 
     @DisplayName("Useless test to test JaCoCo")
     @Test
-    void testUselessMethod() {
-        App app = new App();
-        assertEquals(5, app.uselessMethodToTestJaCoCo(2, 3));
-    }
-
-    @DisplayName("Useless test to test JaCoCo")
-    @Test
     void testGetGameTitle() {
         App app = new App();
         assertEquals("FDU Battleship v1.0", app.uselessMethodGetGameTitle());
