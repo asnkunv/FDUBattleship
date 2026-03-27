@@ -40,9 +40,9 @@ public class BattleBoard
     private BattleBoardDTO initBoard() {
         Cell[][] grid = new Cell[SIZE][SIZE];
 
-        for (int col = 0; col < SIZE; col++) {
-            for (int row = 0; row < SIZE; row++) {
-                grid[col][row] = Cell.WATER;
+        for (int row = 0; row < SIZE; row++) {
+            for (int col = 0; col < SIZE; col++) {
+                grid[row][col] = Cell.WATER;
             }
         }
 
@@ -70,10 +70,9 @@ public class BattleBoard
         // Print column headers
         System.out.print("   ");
         for (char c : COLUMNS) {
-            System.out.print(c + " ");
+            System.out.print(" " + c + "  ");
         }
         System.out.println();
-        Cell[][] grid = boardState.grid();
 
 
         // Print rows
@@ -82,7 +81,7 @@ public class BattleBoard
             System.out.printf("%2d ", row + 1);
 
             for (int col = 0; col < SIZE; col++) {
-                System.out.print("~ ");
+                System.out.print("[~] ");
             }
 
             System.out.println();
