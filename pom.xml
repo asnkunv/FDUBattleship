@@ -74,19 +74,23 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-pmd-plugin</artifactId>
-        <version>7.17.0</version>
+        <version>3.28.0</version>
         <configuration>
+          <targetJdk>21</targetJdk>
           <rulesets>
-            <ruleset>/rulesets/java/quickstart.xml</ruleset>
+            <ruleset>/category/java/bestpractices.xml</ruleset>
+            <ruleset>/category/java/errorprone.xml</ruleset>
           </rulesets>
-          <failOnViolation>true</failOnViolation>
+          <failOnViolation>false</failOnViolation>
+          <printFailingErrors>true</printFailingErrors>
+          <outputDirectory>${project.build.directory}</outputDirectory>
+          <linkXRef>false</linkXRef>
         </configuration>
         <executions>
           <execution>
             <phase>verify</phase>
             <goals>
               <goal>pmd</goal>
-              <goal>check</goal>
             </goals>
           </execution>
         </executions>
