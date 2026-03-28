@@ -82,3 +82,34 @@ jobs:
             echo "::error::Coverage thresholds not met! Overall: $OVERALL%, Changed: $CHANGED%"
             exit 1
           fi
+
+      # --- PMD ---
+      - name: Run PMD
+        run: mvn pmd:pmd
+
+      - name: Annotate PMD
+        uses: jwgmeligmeyling/pmd-github-action@v1.2
+        with:
+          path: '**/pmd.xml'
+
+      # --- Checkstyle ---
+      - name: Run Checkstyle
+        run: mvn checkstyle:checkstyle
+
+      - name: Annotate Checkstyle
+        uses: dbelyaev/action-checkstyle@v1.16.9
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          reporter: github-pr-review
+          filter_mode: added
+          level: error
+          checkstyle_config: google_checks.xml
+
+      # --- SpotBugs ---
+      - name: Run SpotBugs
+        run: mvn spotbugs:spotbugs
+
+      - name: Annotate SpotBugs
+        uses: jwgmeligmeyling/spotbugs-github-action@v1.2
+        with:
+          path: '**/spotbugsXml.xml'
