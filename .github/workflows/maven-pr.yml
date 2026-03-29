@@ -104,10 +104,10 @@ jobs:
       - name: Debug Checkstyle output
         if: always()
         run: find target -name "*.html" -o -name "*.xml" | grep -i checkstyle
-        
+
       - name: Upload Checkstyle Report
         if: always()
         uses: actions/upload-artifact@v6
         with:
           name: checkstyle-report
-          path: target/checkstyle.html
+          path: target/reports/checkstyle.html
