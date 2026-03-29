@@ -31,7 +31,7 @@ jobs:
         uses: actions/upload-artifact@v6
         with:
           name: pmd-report
-          path: target/pmd.xml
+          path: target/pmd.html
 
       # Upload the compiled JAR as a downloadable artifact
       - name: Upload JAR file
