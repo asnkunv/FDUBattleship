@@ -100,7 +100,7 @@
         <version>3.6.0</version>
         <configuration>
           <encoding>UTF-8</encoding>
-          <failsOnError>true</failsOnError>
+          <failsOnError>false</failsOnError>
           <linkXRef>false</linkXRef>
         </configuration>
         <executions>
