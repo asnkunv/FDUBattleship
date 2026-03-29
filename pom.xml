@@ -66,6 +66,7 @@
       <!--PMD-->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-pmd-plugin</artifactId>
         <version>3.23.0</version>
         <configuration>
           <failOnViolation>false</failOnViolation>
