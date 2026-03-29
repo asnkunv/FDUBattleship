@@ -70,7 +70,7 @@ jobs:
         uses: dbelyaev/action-checkstyle@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          reporter: 'github-pr-check'
+          reporter: 'github-pr-review'
           checkstyle_config: 'sun_checks.xml'
           level: error
           fail_level: error
@@ -80,28 +80,6 @@ jobs:
         uses: jwgmeligmeyling/spotbugs-github-action@master
         with:
           path: '**/spotbugsXml.xml'
-      
-      # - name: Upload SpotBugs Report
-      #   if: always()
-      #   uses: actions/upload-artifact@v6
-      #   with:
-      #     name: spotbugs-report
-      #     path: target/site/spotbugs.html
-
-      # - name: Upload Checkstyle Report
-      #   if: always()
-      #   uses: actions/upload-artifact@v6
-      #   with:
-      #     name: checkstyle-report
-      #     path: target/reports/checkstyle.html
-      
-      # - name: Upload JaCoCo HTML Report
-      #   if: always()
-      #   uses: actions/upload-artifact@v6
-      #   with:
-      #     name: jacoco-report
-      #     path: target/site/jacoco/
-    
 
       - name: Upload JAR Artifact
         if: always()
