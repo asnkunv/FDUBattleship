@@ -117,8 +117,6 @@
         <artifactId>maven-checkstyle-plugin</artifactId>
         <version>3.6.0</version>
         <configuration>
-          <xmlOutput>true</xmlOutput>
-          <htmlOutput>true</htmlOutput>
           <configLocation>sun_checks.xml</configLocation>
           <failOnViolation>false</failOnViolation>
         </configuration>

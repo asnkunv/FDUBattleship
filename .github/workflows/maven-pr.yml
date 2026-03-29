@@ -25,13 +25,6 @@ jobs:
       - name: Build, Test and Analyze
         run: mvn -B clean verify spotbugs:spotbugs checkstyle:checkstyle pmd:pmd
 
-      - name: Upload JAR Artifact
-        if: always()
-        uses: actions/upload-artifact@v6
-        with:
-          name: battleship-jar
-          path: target/*.jar
-
       - name: Publish JaCoCo Coverage Report
         id: jacoco
         uses: madrapps/jacoco-report@v1.7.2
@@ -66,6 +59,7 @@ jobs:
         with:
           sourcePath: 'src/main/java'
           rulesets: 'category/java/errorprone.xml,category/java/codestyle.xml,category/java/design.xml,category/java/performance.xml,category/java/bestpractices.xml'
+          uploadSarifReport: false
 
       - name: Fail if PMD violations found
         if: steps.pmd.outputs.violations != 0
@@ -109,13 +103,20 @@ jobs:
       #     path: target/site/jacoco/
     
 
+      - name: Upload JAR Artifact
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: battleship-jar
+          path: target/*.jar
+
       - name: Upload Analysis Reports
         if: always()
         uses: actions/upload-artifact@v6
         with:
           name: analysis-reports
           path: |
-            target/spotbugs.html
-            target/checkstyle.html
-            target/jacoco/
+            target/site/spotbugs.html
+            target/reports/checkstyle.html
+            target/site/jacoco/
             target/reports/pmd.html

@@ -29,17 +29,6 @@ jobs:
         if: failure()
         run: mvn pmd:pmd
 
-      - name: Find PMD Report
-        if: failure()
-        run: find . -name "pmd*" -type f
-
-      - name: Upload PMD Report
-        if: failure()
-        uses: actions/upload-artifact@v6
-        with:
-          name: pmd-report
-          path: target/reports/pmd.html
-
       # Upload the compiled JAR as a downloadable artifact
       - name: Upload JAR file
         uses: actions/upload-artifact@v6
