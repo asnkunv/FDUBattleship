@@ -93,7 +93,7 @@ jobs:
         with:
           name: analysis-reports
           path: |
-            target/site/spotbugs.html
+            target/spotbugs.html
             target/site/checkstyle.html
             target/site/jacoco/
             target/site/pmd.html
