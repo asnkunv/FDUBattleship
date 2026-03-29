@@ -27,7 +27,7 @@ jobs:
           cache: maven
       # Run all tests and generate JaCoCo coverage report via Maven
       - name: Build, Test and Generate Coverage
-        run: mvn -B clean verify pmd:pmd checkstyle:checkstyle spotbugs:spotbugs spotbugs:html
+        run: mvn -B clean verify pmd:pmd checkstyle:checkstyle spotbugs:spotbugs
       # Upload the compiled JAR as a downloadable artifact
       - name: Upload JAR Artifact
         uses: actions/upload-artifact@v6
