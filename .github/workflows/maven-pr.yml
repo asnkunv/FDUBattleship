@@ -9,6 +9,7 @@ on:
 permissions:
   contents: read
   pull-requests: write
+  checks: write
 
 # Create env var to hold the min coverage
 env:
@@ -96,6 +97,16 @@ jobs:
         if: steps.pmd.outputs.violations != 0
         run: exit 1
 
+      - name: Checkstyle Analysis
+        if: always()
+        uses: dbelyaev/action-checkstyle@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          reporter: 'github-pr-check'
+          checkstyle_config: 'sun_checks.xml'
+          level: error #this is what comes up in the actions
+          fail_level: error
+
       - name: Upload Analysis Report
         if: always()
         uses: actions/upload-artifact@v6
@@ -103,4 +114,5 @@ jobs:
           name: Analysis report
           path: |
             target/reports/pmd.html
+            target/reports/checkstyle.html
 

@@ -67,12 +67,12 @@
         </executions>
       </plugin>
 
+      <!--PMD-->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-pmd-plugin</artifactId>
         <version>3.28.0</version>
         <configuration>
-          <failOnViolation>false</failOnViolation>
           <rulesets>
             <ruleset>/category/java/bestpractices.xml</ruleset>
             <ruleset>/category/java/codestyle.xml</ruleset>
@@ -80,12 +80,33 @@
             <ruleset>/category/java/errorprone.xml</ruleset>
             <ruleset>/category/java/performance.xml</ruleset>
           </rulesets>
+          <failOnViolation>false</failOnViolation>
+          <linkXRef>false</linkXRef>
         </configuration>
         <executions>
           <execution>
             <goals>
               <goal>check</goal>
               <goal>cpd-check</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <!--CHECKSTYLE-->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-checkstyle-plugin</artifactId>
+        <version>3.6.0</version>
+        <configuration>
+          <encoding>UTF-8</encoding>
+          <failsOnError>true</failsOnError>
+          <linkXRef>false</linkXRef>
+        </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>check</goal>
             </goals>
           </execution>
         </executions>
