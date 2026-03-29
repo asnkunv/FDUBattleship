@@ -27,7 +27,7 @@ jobs:
           cache: maven
       # Run all tests and generate JaCoCo coverage report via Maven
       - name: Build, Test and Generate Coverage
-        run: mvn -B clean verify pmd:pmd checkstyle:checkstyle spotbugs:spotbugs
+        run: mvn -B clean verify pmd:pmd checkstyle:checkstyle spotbugs:spotbugs spotbugs:html
       # Upload the compiled JAR as a downloadable artifact
       - name: Upload JAR Artifact
         uses: actions/upload-artifact@v6
@@ -82,6 +82,11 @@ jobs:
         uses: jwgmeligmeyling/checkstyle-github-action@master
         with:
           path: '**/checkstyle-result.xml'
+
+      - name: Debug report paths
+        if: always()
+        run: find target -name "*.html" -o -name "*.xml" | sort
+
       - name: Upload Analysis Reports
         if: always()
         uses: actions/upload-artifact@v6
