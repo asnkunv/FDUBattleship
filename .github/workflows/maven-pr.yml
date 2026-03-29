@@ -1,57 +1,44 @@
 name: Java Battleship PR Workflow
-
-# Triggers only on pull requests targeting master
 on:
   pull_request:
     branches: [ 'master' ]
-
-# Permissions needed to read code and post PR comments
 permissions:
   contents: read
   pull-requests: write
   checks: write
-
-# Create env var to hold the min coverage
 env:
   MIN_COVERAGE: 70
-
 jobs:
   quality-check:
     runs-on: ubuntu-latest
     steps:
-      # Check out the code from the branch
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
 
-      # Set up Java 21 with Maven dependency caching
       - name: Set up JDK 21
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@v4
         with:
           java-version: "21"
           distribution: "temurin"
           cache: maven
 
-      # Run all tests and generate JaCoCo coverage report via Maven
-      - name: Build, Test and Generate Coverage
-        run: mvn -B clean verify
+      - name: Build, Test and Analyze
+        run: mvn -B clean verify spotbugs:spotbugs checkstyle:checkstyle
 
-      # Upload the compiled JAR as a downloadable artifact
       - name: Upload JAR Artifact
+        if: always()
         uses: actions/upload-artifact@v6
         with:
           name: battleship-jar
           path: target/*.jar
 
-      # Upload full HTML coverage report, runs even if build fails
       - name: Upload JaCoCo HTML Report
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v
         with:
           name: jacoco-report
           path: target/site/jacoco/
 
-      # Post coverage results as PR comment and workflow summary
-      # Fails if overall or changed files coverage drops below MIN_COVERAGE
       - name: Publish JaCoCo Coverage Report
         id: jacoco
         uses: madrapps/jacoco-report@v1.7.2
@@ -68,37 +55,29 @@ jobs:
 
       - name: Fail if coverage below threshold
         if: always()
-        # Reuse the env var so bash can read it as $MIN_COVERAGE
         env:
           MIN_COVERAGE: ${{ env.MIN_COVERAGE }}
         run: |
           OVERALL="${{ steps.jacoco.outputs.coverage-overall }}"
           CHANGED="${{ steps.jacoco.outputs.coverage-changed-files }}"
-          
-          # bc -l handles decimal comparison since bash can't do floats natively
-          # if either value is below the threshold, print an error and fail the workflow
-          
           if (( $(echo "$OVERALL < $MIN_COVERAGE" | bc -l) )) || \
              (( $(echo "$CHANGED < $MIN_COVERAGE" | bc -l) )); then
             echo "::error::Coverage thresholds not met! Overall: $OVERALL%, Changed: $CHANGED%"
             exit 1
           fi
 
-      #PMD Check
       - name: PMD Check
         if: always()
         uses: pmd/pmd-github-action@v2
         id: pmd
         with:
           sourcePath: 'src/main/java'
-          rulesets: 'category/java/errorprone.xml, category/java/codestyle.xml, category/java/design.xml, 
-            category/java/performance.xml, category/java/bestpractices.xml'
-            
-      - name: Fail build if there are violations
+          rulesets: 'category/java/errorprone.xml,category/java/codestyle.xml,category/java/design.xml,category/java/performance.xml,category/java/bestpractices.xml'
+
+      - name: Fail if PMD violations found
         if: steps.pmd.outputs.violations != 0
         run: exit 1
 
-      #Checkstyle      
       - name: Checkstyle
         if: always()
         uses: dbelyaev/action-checkstyle@v3
@@ -109,8 +88,18 @@ jobs:
           level: error
           fail_level: error
 
-      - name: Build, Test and Analyze
-        run: mvn -B clean verify cspotbugs:spotbugs heckstyle:checkstyle
+      - name: SpotBugs Annotations
+        if: always()
+        uses: jwgmeligmeyling/spotbugs-github-action@master
+        with:
+          path: '**/spotbugsXml.xml'
+
+      - name: Upload SpotBugs Report
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: spotbugs-report
+          path: target/site/spotbugs.html
 
       - name: Upload Checkstyle Report
         if: always()
@@ -118,29 +107,3 @@ jobs:
         with:
           name: checkstyle-report
           path: target/site/checkstyle.html
-
-      #SpotBugs
-      - name: Build with Maven
-        if: always()
-        run: mvn -B verify spotbugs:spotbugs
-
-      - name: SpotBugs Annotations
-        if: always()
-        uses: jwgmeligmeyling/spotbugs-github-action@master
-        with:
-          path: '**/spotbugsXml.xml'
-
-      - name: Upload SpotBugs HTML Report
-        if: always()
-        uses: actions/upload-artifact@v6 
-        with:
-          name: spotbugs-report
-          path: target/spotbugsXml.html
-
-      - name: Find SpotBugs Report
-        if: always()
-        run: find . -name "spotbugs*" -type f
-
-      - name: Find Checkstyle Report
-        if: always()
-        run: find . -name "checkstyle*" -type f
