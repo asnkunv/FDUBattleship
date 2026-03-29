@@ -1,20 +1,28 @@
 name: Java Battleship PR Workflow
+
+# Triggers only on pull requests targeting master
 on:
   pull_request:
     branches: [ 'master' ]
+
+# Permissions needed to read code and post PR comments
 permissions:
   contents: read
   pull-requests: write
   checks: write
+
+# Create env var to hold the min coverage
 env:
   MIN_COVERAGE: 70
 jobs:
   quality-check:
     runs-on: ubuntu-latest
     steps:
+      # Check out the code from the branch
       - name: Checkout code
         uses: actions/checkout@v6
 
+      # Set up Java 21 with Maven dependency caching
       - name: Set up JDK 21
         uses: actions/setup-java@v5
         with:
@@ -22,9 +30,12 @@ jobs:
           distribution: "temurin"
           cache: maven
 
+       # Run all tests and generate JaCoCo coverage report via Maven
       - name: Build, Test and Analyze
-        run: mvn -B clean verify spotbugs:spotbugs checkstyle:checkstyle pmd:pmd
+        run: mvn -B clean verify
 
+      # Post coverage results as PR comment and workflow summary
+      # Fails if overall or changed files coverage drops below MIN_COVERAGE
       - name: Publish JaCoCo Coverage Report
         id: jacoco
         uses: madrapps/jacoco-report@v1.7.2
@@ -41,6 +52,7 @@ jobs:
 
       - name: Fail if coverage below threshold
         if: always()
+        # Reuse the env var so bash can read it as $MIN_COVERAGE
         env:
           MIN_COVERAGE: ${{ env.MIN_COVERAGE }}
         run: |
@@ -52,6 +64,8 @@ jobs:
             exit 1
           fi
 
+      # Run PMD static analysis across five rule categories (error prone, code style, design,
+      # performance, best practices) and surface violations as GitHub annotations on the PR diff
       - name: PMD Check
         if: always()
         uses: pmd/pmd-github-action@v2
@@ -61,26 +75,32 @@ jobs:
           rulesets: 'category/java/errorprone.xml,category/java/codestyle.xml,category/java/design.xml,category/java/performance.xml,category/java/bestpractices.xml'
           uploadSarifReport: false
 
+       # Hard-fail the job if PMD detected any violations, ensuring no rule-breaking code is merged
       - name: Fail if PMD violations found
         if: steps.pmd.outputs.violations != 0
         run: exit 1
 
+      # Run Checkstyle against Sun coding conventions and annotate any style errors directly
+      # on the PR diff, failing the check at the error level
       - name: Checkstyle
         if: always()
         uses: dbelyaev/action-checkstyle@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          reporter: 'github-pr-review'
+          reporter: 'github-pr-check'
           checkstyle_config: 'sun_checks.xml'
           level: error
           fail_level: error
 
+      # Upload the SpotBugs XML report so GitHub can render bug pattern findings as
+      # inline annotations on the files and lines where issues were detected
       - name: SpotBugs Annotations
         if: always()
         uses: jwgmeligmeyling/spotbugs-github-action@master
         with:
           path: '**/spotbugsXml.xml'
 
+      # Upload the compiled JAR as a downloadable artifact
       - name: Upload JAR Artifact
         if: always()
         uses: actions/upload-artifact@v6
@@ -88,6 +108,8 @@ jobs:
           name: battleship-jar
           path: target/*.jar
 
+      # Bundle all static analysis HTML reports and the full JaCoCo coverage site into one
+      # downloadable artifact
       - name: Upload Analysis Reports
         if: always()
         uses: actions/upload-artifact@v6
