@@ -115,8 +115,7 @@ jobs:
         with:
           name: analysis-reports
           path: |
-            target/site/spotbugs.html
-            target/reports/checkstyle.html
-            target/site/jacoco/
-            target/site/
-        
+            target/spotbugs.html
+            target/checkstyle.html
+            target/jacoco/
+            target/reports/pmd.html
