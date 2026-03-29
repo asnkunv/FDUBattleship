@@ -83,7 +83,7 @@ jobs:
         uses: dbelyaev/action-checkstyle@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          reporter: 'github-pr-review'
+          reporter: 'github-pr-check'
           checkstyle_config: 'sun_checks.xml'
           level: error
           fail_level: error
@@ -101,6 +101,10 @@ jobs:
           name: spotbugs-report
           path: target/site/spotbugs.html
 
+      - name: Debug Checkstyle output
+        if: always()
+        run: find target -name "*.html" -o -name "*.xml" | grep -i checkstyle
+        
       - name: Upload Checkstyle Report
         if: always()
         uses: actions/upload-artifact@v6
