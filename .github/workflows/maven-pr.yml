@@ -82,3 +82,15 @@ jobs:
             echo "::error::Coverage thresholds not met! Overall: $OVERALL%, Changed: $CHANGED%"
             exit 1
           fi
+
+      #PMD Check
+      - name: PMD Check
+        uses: pmd/pmd-github-action@v2
+        id: pmd
+        with:
+          sourcePath: 'src/main/java'
+          rulesets: 'category/java/errorprone.xml, category/java/codestyle.xml, category/java/design.xml, 
+            category/java/performance.xml, category/java/bestpractices.xml'
+      - name: Fail build if there are violations
+        if: steps.pmd.outputs.violations != 0
+        run: exit 1
