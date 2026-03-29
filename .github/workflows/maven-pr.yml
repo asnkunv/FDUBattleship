@@ -104,27 +104,17 @@ jobs:
         uses: dbelyaev/action-checkstyle@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          reporter: 'github-pr-check'
-          checkstyle_config: 'sun_checks.xml'
-          level: error
-          fail_level: error
-
-      - name: Checkstyle
-        if: always()
-        uses: dbelyaev/action-checkstyle@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
           reporter: 'github-pr-review'
           checkstyle_config: 'sun_checks.xml'
           level: error
           fail_level: error
 
       - name: Build, Test and Analyze
-        run: mvn -B clean verify spotbugs:spotbugs checkstyle:checkstyle
+        run: mvn -B clean verify cspotbugs:spotbugs heckstyle:checkstyle
 
       - name: Upload Checkstyle Report
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: checkstyle-report
           path: target/site/checkstyle.html
@@ -146,3 +136,11 @@ jobs:
         with:
           name: spotbugs-report
           path: target/spotbugsXml.html
+
+      - name: Find SpotBugs Report
+        if: always()
+        run: find . -name "spotbugs*" -type f
+
+      - name: Find Checkstyle Report
+        if: always()
+        run: find . -name "checkstyle*" -type f
