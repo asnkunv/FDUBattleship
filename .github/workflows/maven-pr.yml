@@ -119,6 +119,16 @@ jobs:
           level: error
           fail_level: error
 
+      - name: Build, Test and Analyze
+        run: mvn -B clean verify spotbugs:spotbugs checkstyle:checkstyle
+
+      - name: Upload Checkstyle Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: checkstyle-report
+          path: target/site/checkstyle.html
+
       #SpotBugs
       - name: Build with Maven
         if: always()
