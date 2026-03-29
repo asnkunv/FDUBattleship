@@ -32,13 +32,6 @@ jobs:
           name: battleship-jar
           path: target/*.jar
 
-      - name: Upload JaCoCo HTML Report
-        if: always()
-        uses: actions/upload-artifact@v6
-        with:
-          name: jacoco-report
-          path: target/site/jacoco/
-
       - name: Publish JaCoCo Coverage Report
         id: jacoco
         uses: madrapps/jacoco-report@v1.7.2
@@ -93,21 +86,37 @@ jobs:
         uses: jwgmeligmeyling/spotbugs-github-action@master
         with:
           path: '**/spotbugsXml.xml'
+      
+      # - name: Upload SpotBugs Report
+      #   if: always()
+      #   uses: actions/upload-artifact@v6
+      #   with:
+      #     name: spotbugs-report
+      #     path: target/site/spotbugs.html
 
-      - name: Upload SpotBugs Report
+      # - name: Upload Checkstyle Report
+      #   if: always()
+      #   uses: actions/upload-artifact@v6
+      #   with:
+      #     name: checkstyle-report
+      #     path: target/reports/checkstyle.html
+      
+      # - name: Upload JaCoCo HTML Report
+      #   if: always()
+      #   uses: actions/upload-artifact@v6
+      #   with:
+      #     name: jacoco-report
+      #     path: target/site/jacoco/
+    
+
+      - name: Upload Analysis Reports
         if: always()
         uses: actions/upload-artifact@v6
         with:
-          name: spotbugs-report
-          path: target/site/spotbugs.html
-
-      - name: Debug Checkstyle output
-        if: always()
-        run: find target -name "*.html" -o -name "*.xml" | grep -i checkstyle
-
-      - name: Upload Checkstyle Report
-        if: always()
-        uses: actions/upload-artifact@v6
-        with:
-          name: checkstyle-report
-          path: target/reports/checkstyle.html
+          name: analysis-reports
+          path: |
+            target/site/spotbugs.html
+            target/reports/checkstyle.html
+            target/site/jacoco/
+            target/site/
+        
