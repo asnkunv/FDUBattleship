@@ -74,7 +74,10 @@
         <configuration>
           <rulesets>
             <ruleset>/category/java/bestpractices.xml</ruleset>
-            <ruleset>d:\rulesets\strings.xml</ruleset>
+            <ruleset>/category/java/codestyle.xml</ruleset>
+            <ruleset>/category/java/design.xml</ruleset>
+            <ruleset>/category/java/errorprone.xml</ruleset>
+            <ruleset>/category/java/performance.xml</ruleset>
           </rulesets>
         </configuration>
         <executions>
