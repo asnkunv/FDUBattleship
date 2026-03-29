@@ -92,6 +92,9 @@
         <configuration>
           <xmlOutput>true</xmlOutput>
           <failOnError>false</failOnError>
+          <linkXRef>false</linkXRef>
+          <failsOnError>false</failsOnError>
+          <outputFileFormat>xml</outputFileFormat>
         </configuration>
       </plugin>
     </plugins>
