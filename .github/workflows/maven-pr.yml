@@ -82,3 +82,33 @@ jobs:
             echo "::error::Coverage thresholds not met! Overall: $OVERALL%, Changed: $CHANGED%"
             exit 1
           fi
+
+      #ONE FAMILY FROM THE SAME PUBLISHER
+      - name: PMD report
+        if: always()
+        uses: jwgmeligmeyling/pmd-github-action@master
+        with:
+          path: '**/pmd.xml'
+
+      - name: SpotBugs Annotations
+        if: always()
+        uses: jwgmeligmeyling/spotbugs-github-action@master
+        with:
+          path: '**/spotbugsXml.xml'
+        
+      - name: Checkstyle
+        if: always()
+        uses: jwgmeligmeyling/checkstyle-github-action@master
+        with:
+          path: '**/checkstyle-result.xml' 
+      
+      - name: Upload Analysis Reports
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: analysis-reports
+          path: |
+            target/site/spotbugs.html
+            target/site/checkstyle.html
+            target/site/jacoco/
+            target/site/pmd.html

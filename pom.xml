@@ -66,6 +66,45 @@
           </execution>
         </executions>
       </plugin>
+
+      <!--PMD-->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-pmd-plugin</artifactId>
+        <version>3.13.0</version>
+        <configuration>
+          <xmlOutput>true</xmlOutput>
+          <htmlOutput>true</htmlOutput>
+          <includeTests>true</includeTests>
+          <failOnViolation>false</failOnViolation>
+          <skipEmptyReport>false</skipEmptyReport>
+        </configuration>
+      </plugin>
+
+      <!--CHECKSTYLE-->
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-checkstyle-plugin</artifactId>
+          <version>3.1.1</version>
+          <configuration>
+            <xmlOutput>true</xmlOutput>
+            <htmlOutput>true</htmlOutput>
+            <failsOnError>false</failsOnError>
+          </configuration>
+      </plugin>
+
+      <!--SPOTBUGS-->
+        <plugin>
+          <groupId>com.github.spotbugs</groupId>
+          <artifactId>spotbugs-maven-plugin</artifactId>
+          <version>4.0.0</version>
+          <configuration>
+            <xmlOutput>true</xmlOutput>
+            <htmlOutput>true</htmlOutput>
+            <failOnError>false</failOnError>
+          </configuration>
+        </plugin>
+
     </plugins>
   </build>
 </project>
