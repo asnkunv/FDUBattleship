@@ -29,9 +29,13 @@ jobs:
         if: failure()
         run: mvn pmd:pmd
 
+      - name: Find PMD Report
+        if: failure()
+        run: find . -name "pmd*" -type f
+        
       - name: Upload PMD Report
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: pmd-report
           path: target/site/pmd.html
