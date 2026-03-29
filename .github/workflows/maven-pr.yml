@@ -86,6 +86,7 @@ jobs:
 
       #PMD Check
       - name: PMD Check
+        if: always()
         uses: pmd/pmd-github-action@v2
         id: pmd
         with:
@@ -99,6 +100,7 @@ jobs:
 
       #Checkstyle      
       - name: Checkstyle
+        if: always()
         uses: dbelyaev/action-checkstyle@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
@@ -108,6 +110,7 @@ jobs:
           fail_level: error
 
       - name: Checkstyle
+        if: always()
         uses: dbelyaev/action-checkstyle@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
@@ -118,9 +121,11 @@ jobs:
 
       #SpotBugs
       - name: Build with Maven
+        if: always()
         run: mvn -B verify spotbugs:spotbugs
 
       - name: SpotBugs Annotations
+        if: always()
         uses: jwgmeligmeyling/spotbugs-github-action@master
         with:
           path: '**/spotbugsXml.xml'
