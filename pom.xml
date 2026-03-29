@@ -73,7 +73,6 @@
         <artifactId>maven-pmd-plugin</artifactId>
         <version>3.28.0</version>
         <configuration>
-          <format>html</format>
           <rulesets>
             <ruleset>/category/java/bestpractices.xml</ruleset>
             <ruleset>/category/java/codestyle.xml</ruleset>
