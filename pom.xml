@@ -22,6 +22,7 @@
   </dependencies>
   <build>
     <plugins>
+
       <plugin>
         <artifactId>maven-jar-plugin</artifactId>
         <version>3.4.1</version>
@@ -33,12 +34,14 @@
           </archive>
         </configuration>
       </plugin>
+
       <!-- Ensure JUnit 5 runs correctly -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
         <version>3.2.5</version>
       </plugin>
+
       <!-- JaCoCo for coverage -->
       <plugin>
         <groupId>org.jacoco</groupId>
@@ -59,45 +62,36 @@
           </execution>
         </executions>
       </plugin>
+
       <!--PMD-->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-pmd-plugin</artifactId>
-        <!-- 3.23.0+ is required for Java 21 support -->
         <version>3.23.0</version>
         <configuration>
-          <linkXRef>false</linkXRef>
-          <includeTests>true</includeTests>
           <failOnViolation>false</failOnViolation>
-          <skipEmptyReport>false</skipEmptyReport>
         </configuration>
       </plugin>
+
       <!--CHECKSTYLE-->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-checkstyle-plugin</artifactId>
         <version>3.3.1</version>
         <configuration>
-          <linkXRef>false</linkXRef>
           <failsOnError>false</failsOnError>
-          <outputFileFormat>xml</outputFileFormat>
         </configuration>
       </plugin>
+
       <!--SPOTBUGS-->
       <plugin>
         <groupId>com.github.spotbugs</groupId>
         <artifactId>spotbugs-maven-plugin</artifactId>
-        <!-- 4.0.0 is very old; 4.8.x fixes many issues -->
         <version>4.8.3.1</version>
         <configuration>
-          <xmlOutput>true</xmlOutput>
-          <htmlOutput>true</htmlOutput> 
-          <failOnError>false</failOnError>
-          <linkXRef>false</linkXRef>
           <failsOnError>false</failsOnError>
-          <outputFileFormat>xml</outputFileFormat>
         </configuration>
       </plugin>
+
     </plugins>
   </build>
 </project>
