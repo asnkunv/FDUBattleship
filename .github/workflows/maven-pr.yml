@@ -9,6 +9,7 @@ on:
 permissions:
   contents: read
   pull-requests: write
+  checks: write
 
 # Create env var to hold the min coverage
 env:
@@ -91,6 +92,42 @@ jobs:
           sourcePath: 'src/main/java'
           rulesets: 'category/java/errorprone.xml, category/java/codestyle.xml, category/java/design.xml, 
             category/java/performance.xml, category/java/bestpractices.xml'
+            
       - name: Fail build if there are violations
         if: steps.pmd.outputs.violations != 0
         run: exit 1
+
+      #Checkstyle      
+      - name: Checkstyle
+        uses: dbelyaev/action-checkstyle@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          reporter: 'github-pr-check'
+          checkstyle_config: 'sun_checks.xml'
+          level: error
+          fail_level: error
+
+      - name: Checkstyle
+        uses: dbelyaev/action-checkstyle@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          reporter: 'github-pr-review'
+          checkstyle_config: 'sun_checks.xml'
+          level: error
+          fail_level: error
+
+      #SpotBugs
+      - name: Build with Maven
+        run: mvn -B verify spotbugs:spotbugs
+
+      - name: SpotBugs Annotations
+        uses: jwgmeligmeyling/spotbugs-github-action@master
+        with:
+          path: '**/spotbugsXml.xml'
+
+      - name: Upload SpotBugs HTML Report
+        if: always()
+        uses: actions/upload-artifact@v6 
+        with:
+          name: spotbugs-report
+          path: target/spotbugsXml.html
