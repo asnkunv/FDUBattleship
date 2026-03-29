@@ -100,7 +100,6 @@
         <configuration>
           <xmlOutput>true</xmlOutput>
           <htmlOutput>true</htmlOutput>
-          <failOnError>false</failOnError>
         </configuration>
         <executions>
           <execution>
@@ -118,7 +117,6 @@
         <version>3.6.0</version>
         <configuration>
           <configLocation>sun_checks.xml</configLocation>
-          <failOnViolation>false</failOnViolation>
         </configuration>
         <executions>
           <execution>
