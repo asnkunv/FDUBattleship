@@ -23,7 +23,7 @@ jobs:
           cache: maven
 
       - name: Build, Test and Analyze
-        run: mvn -B clean verify spotbugs:spotbugs checkstyle:checkstyle
+        run: mvn -B clean verify spotbugs:spotbugs checkstyle:checkstyle pmd:pmd
 
       - name: Upload JAR Artifact
         if: always()
@@ -106,4 +106,4 @@ jobs:
         uses: actions/upload-artifact@v6
         with:
           name: checkstyle-report
-          path: target/site/checkstyle.html
+          path: target/checkstyle.html
