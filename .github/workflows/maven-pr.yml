@@ -1,46 +1,38 @@
 name: Java Battleship PR Workflow
-
 # Triggers only on pull requests targeting master
 on:
   pull_request:
     branches: [ 'master' ]
-
 # Permissions needed to read code and post PR comments
 permissions:
   contents: read
   pull-requests: write
-
 # Create env var to hold the min coverage
 env:
   MIN_COVERAGE: 70
-
 jobs:
   quality-check:
     runs-on: ubuntu-latest
     steps:
       # Check out the code from the branch
       - name: Checkout code
-        uses: actions/checkout@v6
-
+        uses: actions/checkout@v4
       # Set up Java 21 with Maven dependency caching
       - name: Set up JDK 21
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@v4
         with:
           java-version: "21"
           distribution: "temurin"
           cache: maven
-
       # Run all tests and generate JaCoCo coverage report via Maven
       - name: Build, Test and Generate Coverage
         run: mvn -B clean verify pmd:pmd checkstyle:checkstyle spotbugs:spotbugs
-
       # Upload the compiled JAR as a downloadable artifact
       - name: Upload JAR Artifact
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v4
         with:
           name: battleship-jar
           path: target/*.jar
-
       # Post coverage results as PR comment and workflow summary
       # Fails if overall or changed files coverage drops below MIN_COVERAGE
       - name: Publish JaCoCo Coverage Report
@@ -56,47 +48,42 @@ jobs:
           pass-emoji: '😊'
           fail-emoji: '😢'
           comment-type: both
-
       - name: Fail if coverage below threshold
         if: always()
-        # Reuse the env var so bash can read it as $MIN_COVERAGE
         env:
           MIN_COVERAGE: ${{ env.MIN_COVERAGE }}
         run: |
           OVERALL="${{ steps.jacoco.outputs.coverage-overall }}"
           CHANGED="${{ steps.jacoco.outputs.coverage-changed-files }}"
-          
+
           # bc -l handles decimal comparison since bash can't do floats natively
           # if either value is below the threshold, print an error and fail the workflow
-          
+
           if (( $(echo "$OVERALL < $MIN_COVERAGE" | bc -l) )) || \
              (( $(echo "$CHANGED < $MIN_COVERAGE" | bc -l) )); then
             echo "::error::Coverage thresholds not met! Overall: $OVERALL%, Changed: $CHANGED%"
             exit 1
           fi
-
-      #ONE FAMILY FROM THE SAME PUBLISHER
+      # ONE FAMILY FROM THE SAME PUBLISHER
       - name: PMD report
         if: always()
         uses: jwgmeligmeyling/pmd-github-action@master
         with:
           path: '**/pmd.xml'
-
       - name: SpotBugs Annotations
         if: always()
         uses: jwgmeligmeyling/spotbugs-github-action@master
         with:
+          # spotbugs-maven-plugin writes to target/spotbugsXml.xml (capital X)
           path: '**/spotbugsXml.xml'
-        
       - name: Checkstyle
         if: always()
         uses: jwgmeligmeyling/checkstyle-github-action@master
         with:
-          path: '**/checkstyle-result.xml' 
-      
+          path: '**/checkstyle-result.xml'
       - name: Upload Analysis Reports
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v4
         with:
           name: analysis-reports
           path: |

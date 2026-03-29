@@ -1,21 +1,17 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-
   <groupId>org.fdu</groupId>
   <artifactId>FDUBattleship</artifactId>
   <version>1.0-SNAPSHOT</version>
   <packaging>jar</packaging>
-
   <name>FDUBattleship</name>
   <url>http://maven.apache.org</url>
-
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.source>21</maven.compiler.source>
     <maven.compiler.target>21</maven.compiler.target>
   </properties>
-
   <dependencies>
     <dependency>
       <groupId>org.junit.jupiter</groupId>
@@ -24,7 +20,6 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
-
   <build>
     <plugins>
       <plugin>
@@ -38,14 +33,12 @@
           </archive>
         </configuration>
       </plugin>
-
       <!-- Ensure JUnit 5 runs correctly -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
         <version>3.2.5</version>
       </plugin>
-
       <!-- JaCoCo for coverage -->
       <plugin>
         <groupId>org.jacoco</groupId>
@@ -66,45 +59,41 @@
           </execution>
         </executions>
       </plugin>
-
       <!--PMD-->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-pmd-plugin</artifactId>
-        <version>3.21.0</version>
+        <!-- 3.23.0+ is required for Java 21 support -->
+        <version>3.23.0</version>
         <configuration>
-          <xmlOutput>true</xmlOutput>
-          <htmlOutput>true</htmlOutput>
+          <linkXRef>false</linkXRef>
           <includeTests>true</includeTests>
           <failOnViolation>false</failOnViolation>
           <skipEmptyReport>false</skipEmptyReport>
         </configuration>
       </plugin>
-
       <!--CHECKSTYLE-->
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-checkstyle-plugin</artifactId>
-          <version>3.1.1</version>
-          <configuration>
-            <xmlOutput>true</xmlOutput>
-            <htmlOutput>true</htmlOutput>
-            <failsOnError>false</failsOnError>
-          </configuration>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-checkstyle-plugin</artifactId>
+        <version>3.3.1</version>
+        <configuration>
+          <linkXRef>false</linkXRef>
+          <failsOnError>false</failsOnError>
+          <outputFileFormat>xml</outputFileFormat>
+        </configuration>
       </plugin>
-
       <!--SPOTBUGS-->
-        <plugin>
-          <groupId>com.github.spotbugs</groupId>
-          <artifactId>spotbugs-maven-plugin</artifactId>
-          <version>4.0.0</version>
-          <configuration>
-            <xmlOutput>true</xmlOutput>
-            <htmlOutput>true</htmlOutput>
-            <failOnError>false</failOnError>
-          </configuration>
-        </plugin>
-
+      <plugin>
+        <groupId>com.github.spotbugs</groupId>
+        <artifactId>spotbugs-maven-plugin</artifactId>
+        <!-- 4.0.0 is very old; 4.8.x fixes many issues -->
+        <version>4.8.3.1</version>
+        <configuration>
+          <xmlOutput>true</xmlOutput>
+          <failOnError>false</failOnError>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
 </project>
