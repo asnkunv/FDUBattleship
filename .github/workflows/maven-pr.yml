@@ -32,7 +32,7 @@ jobs:
 
       # Run all tests and generate JaCoCo coverage report via Maven
       - name: Build, Test and Generate Coverage
-        run: mvn -B clean verify
+        run: mvn -B clean verify pmd:pmd checkstyle:checkstyle spotbugs:spotbugs
 
       # Upload the compiled JAR as a downloadable artifact
       - name: Upload JAR Artifact
@@ -40,14 +40,6 @@ jobs:
         with:
           name: battleship-jar
           path: target/*.jar
-
-      # Upload full HTML coverage report, runs even if build fails
-      - name: Upload JaCoCo HTML Report
-        if: always()
-        uses: actions/upload-artifact@v6
-        with:
-          name: jacoco-report
-          path: target/site/jacoco/
 
       # Post coverage results as PR comment and workflow summary
       # Fails if overall or changed files coverage drops below MIN_COVERAGE
