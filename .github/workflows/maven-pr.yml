@@ -1,23 +1,29 @@
 name: Java Battleship PR Workflow
+
 # Triggers only on pull requests targeting master
 on:
   pull_request:
     branches: [ 'master' ]
+
 # Permissions needed to read code and post PR comments
 permissions:
   contents: read
   pull-requests: write
   checks: write
+  
 # Create env var to hold the min coverage
 env:
   MIN_COVERAGE: 70
+
 jobs:
   quality-check:
     runs-on: ubuntu-latest
     steps:
+
       # Check out the code from the branch
       - name: Checkout code
         uses: actions/checkout@v6
+
       # Set up Java 21 with Maven dependency caching
       - name: Set up JDK 21
         uses: actions/setup-java@v5 
@@ -25,15 +31,11 @@ jobs:
           java-version: "21"
           distribution: "temurin"
           cache: maven
+
       # Run all tests and generate JaCoCo coverage report via Maven
       - name: Build, Test and Generate Coverage
         run: mvn -B clean verify pmd:pmd checkstyle:checkstyle spotbugs:spotbugs
-      # Upload the compiled JAR as a downloadable artifact
-      - name: Upload JAR Artifact
-        uses: actions/upload-artifact@v6
-        with:
-          name: battleship-jar
-          path: target/*.jar
+
       # Post coverage results as PR comment and workflow summary
       # Fails if overall or changed files coverage drops below MIN_COVERAGE
       - name: Publish JaCoCo Coverage Report
@@ -49,6 +51,8 @@ jobs:
           pass-emoji: '😊'
           fail-emoji: '😢'
           comment-type: both
+
+      # Manually fail if the coverage below threshold
       - name: Fail if coverage below threshold
         if: always()
         env:
@@ -65,28 +69,38 @@ jobs:
             echo "::error::Coverage thresholds not met! Overall: $OVERALL%, Changed: $CHANGED%"
             exit 1
           fi
-      # ONE FAMILY FROM THE SAME PUBLISHER
+
+      # PMD
       - name: PMD report
         if: always()
         uses: jwgmeligmeyling/pmd-github-action@master
+
         with:
           path: '**/pmd.xml'
+
+      # SPOTBUGS
       - name: SpotBugs Annotations
         if: always()
         uses: jwgmeligmeyling/spotbugs-github-action@master
         with:
           # spotbugs-maven-plugin writes to target/spotbugsXml.xml (capital X)
           path: '**/spotbugsXml.xml'
-      - name: Checkstyle
+      
+      #CHECKSTYLE
+      - name: Checkstyle Annotations
         if: always()
         uses: jwgmeligmeyling/checkstyle-github-action@master
         with:
           path: '**/checkstyle-result.xml'
 
-      - name: Debug report paths
-        if: always()
-        run: find target -name "*.html" -o -name "*.xml" | sort
+      # Upload the compiled JAR as a downloadable artifact
+      - name: Upload JAR Artifact
+        uses: actions/upload-artifact@v6
+        with:
+          name: battleship-jar
+          path: target/*.jar
 
+      #Upload all the analysis artifacts in one folder
       - name: Upload Analysis Reports
         if: always()
         uses: actions/upload-artifact@v6
