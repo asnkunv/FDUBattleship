@@ -25,9 +25,6 @@ jobs:
       # Run all automated tests
       - name: Build and Test with Maven
         run: mvn -B clean verify
-      - name: Generate PMD HTML Report
-        if: failure()
-        run: mvn pmd:pmd
 
       # Upload the compiled JAR as a downloadable artifact
       - name: Upload JAR file

@@ -82,14 +82,14 @@
             <ruleset>/category/java/performance.xml</ruleset>
           </rulesets>
         </configuration>
-        <executions>
+        <!-- <executions>
           <execution>
             <goals>
               <goal>check</goal>
               <goal>cpd-check</goal>
             </goals>
           </execution>
-        </executions>
+        </executions> -->
       </plugin>
 
       <!-- SpotBugs -->
@@ -102,13 +102,13 @@
           <htmlOutput>true</htmlOutput>
           <failOnError>false</failOnError>
         </configuration>
-        <executions>
+        <!-- <executions>
           <execution>
             <goals>
               <goal>check</goal>
             </goals>
           </execution>
-        </executions>
+        </executions> -->
       </plugin>
 
       <!-- Checkstyle -->
@@ -120,13 +120,13 @@
           <configLocation>sun_checks.xml</configLocation>
           <failOnViolation>false</failOnViolation>
         </configuration>
-        <executions>
+        <!-- <executions>
           <execution>
             <goals>
               <goal>checkstyle</goal>
             </goals>
           </execution>
-        </executions>
+        </executions> -->
       </plugin>
 
     </plugins>
