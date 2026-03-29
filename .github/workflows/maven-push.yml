@@ -26,6 +26,13 @@ jobs:
       - name: Build and Test with Maven
         run: mvn -B clean verify
 
+      - name: Upload PMD Report
+        if: failure()
+        uses: actions/upload-artifact@v6
+        with:
+          name: pmd-report
+          path: target/pmd.xml
+
       # Upload the compiled JAR as a downloadable artifact
       - name: Upload JAR file
         uses: actions/upload-artifact@v6
