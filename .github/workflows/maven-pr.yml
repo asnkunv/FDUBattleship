@@ -102,12 +102,13 @@ jobs:
           packages: com.example.-
           target: ./target
           dependenciesPath: ~/.m2
-          basePath: src/main/java         
+          basePath: src/main/java     
+          outputType: 'html'    
 
       - name: Upload analysis results to GitHub Security tab
         uses: github/codeql-action/upload-sarif@v2
         with:
-          sarif_file: ${{github.workspace}}/results.sarif
+          sarif_file: ${{github.workspace}}/results.html
 
       - name: Fail if SpotBugs violation found
         if: always()
