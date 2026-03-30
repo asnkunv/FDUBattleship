@@ -124,6 +124,11 @@ jobs:
           name: battleship-jar
           path: target/*.jar
 
+
+      - name: Debug SARIF content
+        if: always()
+        run: cat ${{github.workspace}}/results.sarif
+
       #UPLOAD ALL ANALYSIS ARTIFACT
       - name: Upload Analysis Report
         if: always()
