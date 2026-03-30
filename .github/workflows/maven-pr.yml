@@ -108,6 +108,10 @@ jobs:
           fail_level: error
           workdir: 'src/main/java'
 
+      - name: Debug
+        if: always()
+        run: find target/ -name "*.html"
+
       - name: Upload Analysis Report
         if: always()
         uses: actions/upload-artifact@v6
@@ -115,5 +119,5 @@ jobs:
           name: Analysis report
           path: |
             target/reports/pmd.html
-            target/reports/checkstyle.html
+            target//checkstyle.html
 

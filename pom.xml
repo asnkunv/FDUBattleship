@@ -101,7 +101,6 @@
         <configuration>
           <configLocation>sun_checks.xml</configLocation>
           <encoding>UTF-8</encoding>
-          <failsOnError>false</failsOnError>
           <failOnViolation>false</failOnViolation>
           <linkXRef>false</linkXRef>
         </configuration>
