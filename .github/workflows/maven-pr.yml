@@ -100,7 +100,7 @@ jobs:
         if: always()
         uses: jmservera/spotbugs-github-action@v0.2.0-alpha
         with:
-          packages: com.fdu.battleship.-
+          packages: org.fdu.-
           target: ./target
           dependenciesPath: ~/.m2
           basePath: src/main/java

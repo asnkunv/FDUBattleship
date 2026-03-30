@@ -1,3 +1,5 @@
+package org.fdu;
+
 public class SpotBugsViolations {
 
     // NP_NULL_ON_SOME_PATH - possible null pointer dereference
