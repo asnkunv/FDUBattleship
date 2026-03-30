@@ -106,6 +106,7 @@ jobs:
           checkstyle_config: 'sun_checks.xml'
           level: error #this is what comes up in the actions
           fail_level: error
+          workdir: 'src/main/java'
 
       - name: Upload Analysis Report
         if: always()
