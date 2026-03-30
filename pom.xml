@@ -130,6 +130,7 @@
           <failOnError>false</failOnError>
           <failOnViolation>false</failOnViolation>
           <htmlOutput>true</htmlOutput>
+          <xmlOutput>true</xmlOutput>
         </configuration>
         <executions>
           <execution>
