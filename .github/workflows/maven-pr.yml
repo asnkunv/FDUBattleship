@@ -101,7 +101,7 @@ jobs:
         with:
           path: '**/spotbugsXml.xml'
 
-      - name: SpotBugs Check
+      - name: Fail if SpotBugs violation found
         if: always()
         run: |
           grep -q '<BugInstance' target/spotbugsXml.xml && echo "::error::SpotBugs violations found!" && exit 1 || exit 0
