@@ -116,7 +116,7 @@ jobs:
 
       - name: Debug
         if: always()
-        run: find target/ -name "*.html"
+        run: find target/ -name "*.html" && find target/ -name "*.xml" | grep -v "maven\|surefire\|jacoco"
 
       - name: Upload Analysis Report
         if: always()
