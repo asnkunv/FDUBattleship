@@ -10,6 +10,7 @@ permissions:
   contents: read
   pull-requests: write
   checks: write
+  security-events: write
 
 # Create env var to hold the min coverage
 env:
@@ -105,7 +106,8 @@ jobs:
           basePath: src/main/java
 
       - name: Upload analysis results to GitHub Security tab
-        uses: github/codeql-action/upload-sarif@v2
+        if: always()
+        uses: github/codeql-action/upload-sarif@v3 
         with:
           sarif_file: ${{github.workspace}}/results.sarif
 
