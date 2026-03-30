@@ -95,7 +95,6 @@ jobs:
           workdir: 'src/main/java'
 
       #Spotbug
-
       - name: Run SpotBugs action
         if: always()
         uses: jmservera/spotbugs-github-action@v0.2.0-alpha
