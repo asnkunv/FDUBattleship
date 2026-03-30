@@ -106,8 +106,16 @@
         </configuration>
         <executions>
           <execution>
+            <id>checkstyle-check</id>
             <goals>
               <goal>check</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>checkstyle-report</id>
+            <phase>verify</phase>
+            <goals>
+              <goal>checkstyle</goal>
             </goals>
           </execution>
         </executions>

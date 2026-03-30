@@ -119,5 +119,4 @@ jobs:
           name: Analysis report
           path: |
             target/reports/pmd.html
-            target//checkstyle.html
-
+            target/reports/cpd.html
