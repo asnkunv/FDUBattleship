@@ -101,6 +101,10 @@ jobs:
         with:
           path: '**/spotbugsXml.xml'
 
+      - name: SpotBugs Check
+        if: always()
+        run: |
+          grep -q '<BugInstance' target/spotbugsXml.xml && echo "::error::SpotBugs violations found!" && exit 1 || exit 0
 
       # Upload the compiled JAR as a downloadable artifact
       - name: Upload JAR Artifact
