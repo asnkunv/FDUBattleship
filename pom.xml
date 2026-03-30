@@ -133,7 +133,7 @@
         </configuration>
         <executions>
           <goals>
-            <goal>spotbugs</goal>
+            <goal>check</goal>
           </goals>
         </executions>
       </plugin>
