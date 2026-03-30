@@ -104,6 +104,7 @@ jobs:
 
       # Upload the compiled JAR as a downloadable artifact
       - name: Upload JAR Artifact
+        if: always()
         uses: actions/upload-artifact@v6
         with:
           name: battleship-jar
