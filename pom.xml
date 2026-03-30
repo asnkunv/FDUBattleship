@@ -121,6 +121,23 @@
         </executions>
       </plugin>
 
+      <!--SpotBug-->
+      <plugin>
+        <groupId>com.github.spotbugs</groupId>
+        <artifactId>spotbugs-maven-plugin</artifactId>
+        <version>4.9.8.3</version>
+        <configuration>
+          <failOnError>false</failOnError>
+          <failOnViolation>false</failOnViolation>
+          <htmlOutput>true</htmlOutput>
+        </configuration>
+        <executions>
+          <goals>
+            <goal>spotbugs</goal>
+          </goals>
+        </executions>
+      </plugin>
+
     </plugins>
   </build>
 </project>

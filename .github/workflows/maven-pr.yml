@@ -108,6 +108,12 @@ jobs:
           fail_level: error
           workdir: 'src/main/java'
 
+      - name: SpotBugs Annotations
+        if: always()
+        uses: jwgmeligmeyling/spotbugs-github-action@master
+        with:
+          path: '**/spotbugsXml.xml'
+
       - name: Debug
         if: always()
         run: find target/ -name "*.html"
@@ -120,3 +126,5 @@ jobs:
           path: |
             target/reports/pmd.html
             target/reports/cpd.html
+            target/reports/checkstyle.html
+            target/site/spotbugs.html
