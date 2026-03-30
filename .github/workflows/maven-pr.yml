@@ -95,6 +95,7 @@ jobs:
           workdir: 'src/main/java'
 
       #Spotbug
+
       - name: Run SpotBugs action
         if: always()
         uses: jmservera/spotbugs-github-action@v0.2.0-alpha
@@ -102,13 +103,12 @@ jobs:
           packages: com.example.-
           target: ./target
           dependenciesPath: ~/.m2
-          basePath: src/main/java     
-          outputType: 'html'    
+          basePath: src/main/java
 
       - name: Upload analysis results to GitHub Security tab
         uses: github/codeql-action/upload-sarif@v2
         with:
-          sarif_file: ${{github.workspace}}/results.html
+          sarif_file: ${{github.workspace}}/results.sarif
 
       - name: Fail if SpotBugs violation found
         if: always()
@@ -130,8 +130,4 @@ jobs:
         with:
           name: Analysis report
           path: |
-            target/reports/pmd.html
-            target/reports/cpd.html
-            target/reports/checkstyle.html
-            target/site/spotbugs.html
             target/site/jacoco/
