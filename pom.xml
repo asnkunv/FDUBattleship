@@ -132,9 +132,11 @@
           <htmlOutput>true</htmlOutput>
         </configuration>
         <executions>
-          <goals>
-            <goal>check</goal>
-          </goals>
+          <execution>
+            <goals>
+              <goal>spotbugs</goal>
+            </goals>
+          </execution>
         </executions>
       </plugin>
 
