@@ -8,5 +8,8 @@ package org.fdu;
  */
 public enum Cell
 {
-    WATER
+    WATER,
+    SHIP,
+    HIT,
+    MISS
 }
