@@ -39,27 +39,15 @@
          color: black; }
     </style>
 </head>
- 
 <body>
 <h1>BATTLESHIP</h1>
 <table id="board"></table>
-       <p id="version"></p>
-    <script>
-        async function loadVersion() {
-            const response = await fetch("/version");
-            const version = await response.text(); //https://stackoverflow.com/questions/41946457/getting-text-from-fetch-response-object
-            document.getElementById("version").innerText = "Version: " + version;
-        }
-        loadVersion();
-    </script>
-
-    
-<!--    <button onclick="loadBoard()">Load Board</button>-->
-<table id="board" ></table>
-
+<h3>Response:</h3>
+<p id="message"></p>
 <script>
     const size = 10;
     const letters = "ABCDEFGHIJ";
+    let gameOver= false;
     function loadBoard() {
         const table = document.getElementById('board');
         table.innerHTML = '';
@@ -73,10 +61,10 @@
             headerRow.appendChild(th);
         }
         // Predefined cells for demonstration
-        const hitCells = [{row: 2, col: 3}]; // example HIT at (3, D)
-        const missCells = [{row: 5, col: 6}]; // example MISS at (6, G)
+
         for (let i = 0; i < size; i++) {
             const row = table.insertRow();
+
             const labelCell = document.createElement("th");
             labelCell.textContent = i + 1;
             labelCell.className = "label";
@@ -84,25 +72,66 @@
             for (let j = 0; j < size; j++) {
                 const cell = row.insertCell();
                 // Default WATER
-                let state = "water";
-                let symbol = "~";
-                //HIT
-                if (hitCells.some(c => c.row === i && c.col === j)) {
-                    state = "hit";
-                    symbol = "X";
+                cell.className = "water";
+                cell.textContent = "~";
+
+                cell.onclick = function () {
+                    submitAttack(i, j);
+                };
+            }
+
+        }
+
+        function updateBoard(row, col, newState) {
+            const table = document.getElementById("board");
+            const cell = table.rows[row + 1].cells[col + 1];
+
+
+            if (newState === "hit") {
+                cell.className = "hit";
+                cell.textContent = "X";
+            } else {
+                cell.className = "miss";
+                cell.textContent = "O";
+            }
+        }
+        async function submitAttack(row, col) {
+
+            if (gameOver) return;
+
+            const response = await fetch("/api/battleship/attack", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ row: row, column: col })
+            });
+
+            const data = await response.json();
+
+            if (data.isError) {
+                document.getElementById("message").innerText="Cell already attacked.";
+                return;
+            }
+
+            const newState = data.grid[row][col];
+            updateBoard(row, col, newState);
+
+            if (data.gameStatus !== "IN_PROGRESS") {
+                gameOver = true;
+
+                if (data.gameStatus === "WIN") {
+                    document.getElementById("message").innerText="You sunk the ship!";
+                } else {
+                    document.getElementById("message").innerText="You Lose!";
                 }
-                //  MISS
-                if (missCells.some(c => c.row === i && c.col === j)) {
-                    state = "miss";
-                    symbol = "O";
-                }
-                cell.className = state;
-                cell.textContent = symbol;
             }
         }
     }
+
     // Load board on page
-    window.onload = loadBoard;
+    window.onload = async function () {
+        await fetch("/api/battleship/start-game", { method: "POST" });
+        loadBoard();
+    };
 </script>
 </body>
 </html>
