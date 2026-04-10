@@ -1,5 +1,5 @@
 package org.fdu;
-import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Service class responsible for starting the full Battleship game loop.
@@ -45,33 +45,10 @@ public class BattleshipManager {
         Cell[][] shipGrid = new Cell[SIZE][SIZE];
         for (Cell[] row : shipGrid) java.util.Arrays.fill(row, Cell.WATER);
 
-        // Pick a random cell inside the 10x10 bounds for the ship placement
-        Random rand = new Random();
-        int[] shipLengths = {5, 4, 3, 2};
-
+        // Initializes and places ships inside of grid
+        int[] shipLengths = {4, 3, 3, 2};
         for (int shipLen : shipLengths) {
-            boolean placed = false;
-
-            while (!placed) {
-                int shipRow = rand.nextInt(SIZE);
-                int shipCol = rand.nextInt(SIZE - shipLen + 1);
-
-                boolean canPlace = true;
-                for (int i = 0; i < shipLen; i++) {
-                    if (shipGrid[shipRow][shipCol + i] != Cell.WATER) {
-                        canPlace = false;
-                        break;
-                    }
-                }
-
-                if (canPlace) {
-                    for (int i = 0; i < shipLen; i++) {
-                        shipGrid[shipRow][shipCol + i] = Cell.SHIP;
-                        System.out.println("Placing ship cell at: " + (char)('A' + shipCol + i) + (shipRow + 1));
-                    }
-                    placed = true;
-                }
-            }
+            placeShip(shipGrid, shipLen);
         }
 
         computerDTO = new PlayerDTO(shipGrid, 0, GameStatus.IN_PROGRESS);
@@ -79,23 +56,42 @@ public class BattleshipManager {
         Cell[][] trackingGrid = new Cell[SIZE][SIZE];
         for (Cell[] row : trackingGrid) java.util.Arrays.fill(row, Cell.WATER);
         humanDTO = new PlayerDTO(trackingGrid, MAX_GUESSES, GameStatus.IN_PROGRESS);
-
-
-        // build shipGrid = new Cell[SIZE][SIZE], fill all with Cell.WATER
-        // Refactor:
-        // SPIKE ALGO to take in dto as parameter rather than grid:
-        // SPIKE ALGO to place ship how browser places ships
-
-        // loop until all ships are placed:
-        //   pick random row and col
-        //   if cell is Cell.WATER, place Cell.SHIP
-        //   otherwise skip and try again
-        // computerDTO = new PlayerDTO(shipGrid, 0, GameStatus.IN_PROGRESS, ...)
-
-        // build trackingGrid = new Cell[SIZE][SIZE], fill all with Cell.WATER
-        // humanDTO = new PlayerDTO(trackingGrid, MAX_GUESSES, GameStatus.IN_PROGRESS, ...)
     }
 
+
+    //Takes the grid and ship lengths, randomly decides 3 values (row,col,orientation), and checks for boundaries
+    private void placeShip(Cell[][] grid, int shipLength) {
+        boolean shipPlaced = false;
+        while (!shipPlaced) {
+            boolean shipOrientation = ThreadLocalRandom.current().nextBoolean();
+            int row = ThreadLocalRandom.current().nextInt(SIZE);
+            int col = ThreadLocalRandom.current().nextInt(SIZE);
+
+            boolean shipFitsBounds = shipOrientation ? (col + shipLength <= SIZE) : (row + shipLength <= SIZE);
+
+            if (shipFitsBounds) {
+                boolean shipCanBePlaced = true;
+                for (int i = 0; i < shipLength; i++) {
+                    int r = shipOrientation ? row : row + i;
+                    int c = shipOrientation ? col + i : col;
+                    if (grid[r][c] != Cell.WATER) {
+                        shipCanBePlaced = false;
+                        break;
+                    }
+                }
+                if (shipCanBePlaced) {
+                    for (int i = 0; i < shipLength; i++) {
+                        int r = shipOrientation ? row : row + i;
+                        int c = shipOrientation ? col + i : col;
+                        grid[r][c] = Cell.SHIP;
+                        System.out.println("Placing ship cell at: " + (char)('A' + c) + (r + 1)); //Comment to see ship location in console
+                    }
+                    System.out.println("--- Ship of length " + shipLength + " placed ---"); //Comment to see ship length in console
+                    shipPlaced = true;
+                }
+            }
+        }
+    }
 
     /**
      * Starts and runs the main game loop until the player wins or loses.
