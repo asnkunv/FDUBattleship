@@ -46,7 +46,7 @@ public class BattleshipManager {
         for (Cell[] row : shipGrid) java.util.Arrays.fill(row, Cell.WATER);
 
         // Initializes and places ships inside of grid
-        int[] shipLengths = {4, 3, 3, 2};
+        int[] shipLengths = {5, 4, 3, 3, 2};
         for (int shipLen : shipLengths) {
             placeShip(shipGrid, shipLen);
         }
