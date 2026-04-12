@@ -6,6 +6,12 @@ on:
     branches:
       - '**'
 
+# Permissions needed to post commit-level check annotations and upload SARIF
+permissions:
+  contents: read
+  checks: write
+  security-events: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -32,3 +38,63 @@ jobs:
         with:
           name: battleship-jar
           path: target/*.jar
+
+      # Checkstyle – uses github-check reporter so annotations appear
+      # inline on the commit's "Files changed" view
+      - name: Checkstyle Analysis
+        if: always()
+        uses: dbelyaev/action-checkstyle@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          reporter: 'github-check'
+          checkstyle_config: 'sun_checks.xml'
+          level: error
+          fail_level: error
+          workdir: 'src/main/java'
+
+      # PMD – generate SARIF report and upload it so violations appear
+      # as code-scanning annotations on the commit's "Files changed" view
+      - name: PMD Check
+        if: always()
+        id: pmd
+        uses: pmd/pmd-github-action@v2
+        with:
+          rulesets: 'category/java/errorprone.xml,category/java/codestyle.xml,category/java/design.xml,category/java/performance.xml,category/java/bestpractices.xml'
+          uploadSarifReport: true
+
+      - name: Upload PMD SARIF report
+        if: always() && hashFiles('pmd-report.sarif') != ''
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: pmd-report.sarif
+          category: pmd
+
+      - name: Fail if PMD violations found
+        if: always() && steps.pmd.outputs.violations != '0'
+        run: exit 1
+
+      # SpotBugs – the action uploads a SARIF report automatically so
+      # violations appear as annotations on the commit's "Files changed" view
+      - name: SpotBugs Analysis
+        if: always()
+        uses: jwgmeligmeyling/spotbugs-github-action@master
+        with:
+          path: '**/spotbugsXml.xml'
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Fail if SpotBugs violations found
+        if: always()
+        run: |
+          grep -q '<BugInstance' target/spotbugsXml.xml && echo "::error::SpotBugs violations found!" && exit 1 || exit 0
+
+      # Upload all analysis reports as artifacts for detailed review
+      - name: Upload Analysis Reports
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: analysis-reports
+          path: |
+            target/reports/pmd.html
+            target/reports/cpd.html
+            target/reports/checkstyle.html
+            target/site/spotbugs.html
