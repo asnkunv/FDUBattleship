@@ -6,9 +6,10 @@ on:
     branches:
       - '**'
 
-# Permissions needed to post commit-level check annotations and upload SARIF
+# Permissions needed to read code and post annotations on commits
 permissions:
   contents: read
+  pull-requests: write
   checks: write
   security-events: write
 
@@ -32,15 +33,26 @@ jobs:
       - name: Build and Test with Maven
         run: mvn -B clean verify
 
-      # Upload the compiled JAR as a downloadable artifact
-      - name: Upload JAR file
-        uses: actions/upload-artifact@v6
-        with:
-          name: battleship-jar
-          path: target/*.jar
+      # Run SpotBugs via Maven so the XML report exists before the annotation step
+      - name: Run SpotBugs
+        if: always()
+        run: mvn spotbugs:spotbugs -DskipTests
 
-      # Checkstyle – uses github-check reporter so annotations appear
-      # inline on the commit's "Files changed" view
+      # PMD
+      - name: PMD Check
+        if: always()
+        id: pmd
+        uses: pmd/pmd-github-action@v2
+        with:
+          rulesets: 'category/java/errorprone.xml,category/java/codestyle.xml,category/java/design.xml,category/java/performance.xml,category/java/bestpractices.xml'
+          analyzeModifiedFilesOnly: true
+          uploadSarifReport: false
+
+      - name: Fail if PMD violations found
+        if: always() && steps.pmd.outputs.violations != '0'
+        run: exit 1
+
+      # Checkstyle, github-check works on every push, not just PRs
       - name: Checkstyle Analysis
         if: always()
         uses: dbelyaev/action-checkstyle@v3
@@ -52,49 +64,39 @@ jobs:
           fail_level: error
           workdir: 'src/main/java'
 
-      # PMD – generate SARIF report and upload it so violations appear
-      # as code-scanning annotations on the commit's "Files changed" view
-      - name: PMD Check
-        if: always()
-        id: pmd
-        uses: pmd/pmd-github-action@v2
-        with:
-          rulesets: 'category/java/errorprone.xml,category/java/codestyle.xml,category/java/design.xml,category/java/performance.xml,category/java/bestpractices.xml'
-          uploadSarifReport: true
-
-      - name: Upload PMD SARIF report
-        if: always() && hashFiles('pmd-report.sarif') != ''
-        uses: github/codeql-action/upload-sarif@v3
-        with:
-          sarif_file: pmd-report.sarif
-          category: pmd
-
-      - name: Fail if PMD violations found
-        if: always() && steps.pmd.outputs.violations != '0'
-        run: exit 1
-
-      # SpotBugs – the action uploads a SARIF report automatically so
-      # violations appear as annotations on the commit's "Files changed" view
-      - name: SpotBugs Analysis
+      # SpotBugs annotations from the XML generated above
+      - name: SpotBugs Annotations
         if: always()
         uses: jwgmeligmeyling/spotbugs-github-action@master
         with:
           path: '**/spotbugsXml.xml'
-          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Fail if SpotBugs violations found
         if: always()
         run: |
           grep -q '<BugInstance' target/spotbugsXml.xml && echo "::error::SpotBugs violations found!" && exit 1 || exit 0
 
-      # Upload all analysis reports as artifacts for detailed review
+      # Generate HTML reports for all tools
+      - name: Generate Maven Site Reports
+        if: always()
+        run: mvn site -DskipTests --no-transfer-progress
+
+      # Upload the compiled JAR as a downloadable artifact
+      - name: Upload JAR Artifact
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: battleship-jar
+          path: target/*.jar
+
+      # Upload all analysis HTML reports
       - name: Upload Analysis Reports
         if: always()
         uses: actions/upload-artifact@v6
         with:
           name: analysis-reports
           path: |
-            target/reports/pmd.html
-            target/reports/cpd.html
-            target/reports/checkstyle.html
+            target/site/pmd.html
+            target/site/cpd.html
+            target/site/checkstyle.html
             target/site/spotbugs.html
