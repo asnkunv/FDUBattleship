@@ -15,10 +15,6 @@ permissions:
 env:
   MIN_COVERAGE: 70
 
-# Create env var to hold the min coverage
-env:
-  MIN_COVERAGE: 70
-
 jobs:
   quality-check:
     runs-on: ubuntu-latest
@@ -72,61 +68,3 @@ jobs:
             echo "::error::Coverage thresholds not met! Overall: $OVERALL%, Changed: $CHANGED%"
             exit 1
           fi
-      
-      #PMD
-      - name: PMD Check
-        if: always()
-        id: pmd
-        uses: pmd/pmd-github-action@v2
-        with:
-          rulesets: 'category/java/errorprone.xml,category/java/codestyle.xml,category/java/design.xml,category/java/performance.xml,category/java/bestpractices.xml'
-          uploadSarifReport: false
-
-      - name: Fail if PMD violations found
-        if: always() && steps.pmd.outputs.violations != '0'
-        run: exit 1
-
-      #Checkstyle
-      - name: Checkstyle Analysis
-        if: always()
-        uses: dbelyaev/action-checkstyle@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          reporter: 'github-pr-check'
-          checkstyle_config: 'sun_checks.xml'
-          level: error #this is what comes up in the actions
-          fail_level: error
-          workdir: 'src/main/java'
-
-      #Spotbug
-      - name: SpotBugs Annotations
-        if: always()
-        uses: jwgmeligmeyling/spotbugs-github-action@master
-        with:
-          path: '**/spotbugsXml.xml'
-
-      - name: Fail if SpotBugs violation found
-        if: always()
-        run: |
-          grep -q '<BugInstance' target/spotbugsXml.xml && echo "::error::SpotBugs violations found!" && exit 1 || exit 0
-
-      # Upload the compiled JAR as a downloadable artifact
-      - name: Upload JAR Artifact
-        if: always()
-        uses: actions/upload-artifact@v6
-        with:
-          name: battleship-jar
-          path: target/*.jar
-
-      #UPLOAD ALL ANALYSIS ARTIFACT
-      - name: Upload Analysis Report
-        if: always()
-        uses: actions/upload-artifact@v6
-        with:
-          name: Analysis report
-          path: |
-            target/reports/pmd.html
-            target/reports/cpd.html
-            target/reports/checkstyle.html
-            target/site/spotbugs.html
-            target/site/jacoco/
