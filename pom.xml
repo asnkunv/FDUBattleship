@@ -98,7 +98,7 @@
             <ruleset>/category/java/errorprone.xml</ruleset>
             <ruleset>/category/java/performance.xml</ruleset>
           </rulesets>
-          <failOnViolation>false</failOnViolation>
+          <failOnViolation>true</failOnViolation>
           <linkXRef>false</linkXRef>
         </configuration>
         <executions>
@@ -119,7 +119,7 @@
         <configuration>
           <configLocation>sun_checks.xml</configLocation>
           <encoding>UTF-8</encoding>
-          <failOnViolation>false</failOnViolation>
+          <failOnViolation>true</failOnViolation>
           <linkXRef>false</linkXRef>
         </configuration>
         <executions>
@@ -145,8 +145,8 @@
         <artifactId>spotbugs-maven-plugin</artifactId>
         <version>4.9.8.3</version>
         <configuration>
-          <failOnError>false</failOnError>
-          <failOnViolation>false</failOnViolation>
+          <failOnError>true</failOnError>
+          <failOnViolation>true</failOnViolation>
           <htmlOutput>true</htmlOutput>
           <xmlOutput>true</xmlOutput>
         </configuration>
