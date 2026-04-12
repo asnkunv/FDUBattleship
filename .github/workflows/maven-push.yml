@@ -6,6 +6,13 @@ on:
     branches:
       - '**'
 
+# Permissions needed to read code and post annotations on commits
+permissions:
+  contents: read
+  pull-requests: write
+  checks: write
+  security-events: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -26,9 +33,70 @@ jobs:
       - name: Build and Test with Maven
         run: mvn -B clean verify
 
+      # Run SpotBugs via Maven so the XML report exists before the annotation step
+      - name: Run SpotBugs
+        if: always()
+        run: mvn spotbugs:spotbugs -DskipTests
+
+      # PMD
+      - name: PMD Check
+        if: always()
+        id: pmd
+        uses: pmd/pmd-github-action@v2
+        with:
+          rulesets: 'category/java/errorprone.xml,category/java/codestyle.xml,category/java/design.xml,category/java/performance.xml,category/java/bestpractices.xml'
+          analyzeModifiedFilesOnly: true
+          uploadSarifReport: false
+
+      - name: Fail if PMD violations found
+        if: always() && steps.pmd.outputs.violations != '0'
+        run: exit 1
+
+      # Checkstyle, github-check works on every push, not just PRs
+      - name: Checkstyle Analysis
+        if: always()
+        uses: dbelyaev/action-checkstyle@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          reporter: 'github-check'
+          checkstyle_config: 'sun_checks.xml'
+          level: error
+          fail_level: error
+          workdir: 'src/main/java'
+
+      # SpotBugs annotations from the XML generated above
+      - name: SpotBugs Annotations
+        if: always()
+        uses: jwgmeligmeyling/spotbugs-github-action@master
+        with:
+          path: '**/spotbugsXml.xml'
+
+      - name: Fail if SpotBugs violations found
+        if: always()
+        run: |
+          grep -q '<BugInstance' target/spotbugsXml.xml && echo "::error::SpotBugs violations found!" && exit 1 || exit 0
+
+      # Generate HTML reports for all tools
+      - name: Generate Maven Site Reports
+        if: always()
+        run: mvn site -DskipTests --no-transfer-progress
+
       # Upload the compiled JAR as a downloadable artifact
-      - name: Upload JAR file
+      - name: Upload JAR Artifact
+        if: always()
         uses: actions/upload-artifact@v6
         with:
           name: battleship-jar
           path: target/*.jar
+
+      # Upload all analysis HTML reports
+      - name: Upload Analysis Reports
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: analysis-reports
+          path: |
+            target/site/pmd.html
+            target/site/cpd.html
+            target/site/checkstyle.html
+            target/site/spotbugs.html
