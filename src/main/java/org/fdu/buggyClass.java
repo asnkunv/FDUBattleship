@@ -11,4 +11,6 @@ public class buggyClass {
         }
     }
     public void anotherMethod(){} // Checkstyle: no space before '{'
+    public void methodWithLongNameThatExceedsTheLimit() { // Checkstyle: method name too long
+    }
 }
