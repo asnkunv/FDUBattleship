@@ -10,6 +10,7 @@ permissions:
   contents: read
   pull-requests: write
   checks: write
+  security-events: write
 
 # Create env var to hold the min coverage
 env:
@@ -99,11 +100,20 @@ jobs:
           workdir: 'src/main/java'
 
       #Spotbug
-      - name: SpotBugs Annotations
+      - name: Run SpotBugs action
         if: always()
-        uses: jwgmeligmeyling/spotbugs-github-action@master
+        uses: jmservera/spotbugs-github-action@v0.2.0-alpha
         with:
-          path: '**/spotbugsXml.xml'
+          packages: org.fdu.-
+          target: ./target
+          dependenciesPath: ~/.m2
+          basePath: src/main/java
+
+      - name: Upload analysis results to GitHub Security tab
+        if: always()
+        uses: github/codeql-action/upload-sarif@v4 
+        with:
+          sarif_file: ${{github.workspace}}/results.sarif
 
       - name: Fail if SpotBugs violation found
         if: always()
@@ -118,6 +128,11 @@ jobs:
           name: battleship-jar
           path: target/*.jar
 
+
+      - name: Debug SARIF content
+        if: always()
+        run: cat ${{github.workspace}}/results.sarif
+
       #UPLOAD ALL ANALYSIS ARTIFACT
       - name: Upload Analysis Report
         if: always()
@@ -125,8 +140,4 @@ jobs:
         with:
           name: Analysis report
           path: |
-            target/reports/pmd.html
-            target/reports/cpd.html
-            target/reports/checkstyle.html
-            target/site/spotbugs.html
             target/site/jacoco/
