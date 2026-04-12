@@ -4,7 +4,7 @@ pipeline {
     stages {
         stage('Clone') {
             steps {
-                git branch: 'master',
+                git branch: 'ci/cd-pipeline',
                     credentialsId: 'github-credentials',
                     url: 'https://github.com/asnkunv/FDUBattleship.git'
             }
