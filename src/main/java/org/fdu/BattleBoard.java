@@ -16,7 +16,7 @@ public class BattleBoard {
      * Renders the 10x10 grid with column labels A-J across the top and row
      * numbers 1-10 along the left side. Cell display symbols: HIT as [X],
      * MISS as [O], WATER or SHIP as [~] (ship location hidden from player).
-     * Called by BattleShipManager each turn to show the player their current
+     * Called by BattleShipManager, each turn to show the player their current
      * guess history.
      * </p>
      *
