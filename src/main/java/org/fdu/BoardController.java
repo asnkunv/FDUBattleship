@@ -16,6 +16,28 @@ public class BoardController {
         return manager.getHumanDTO().guessesLeft();
     }
 
+    /**
+     * Handles a single attack request from the player and returns the full result
+     * of the turn, including the computer's retaliatory move.
+     * <p>
+     * Validates that a game session exists, that the coordinates are in range,
+     * and that the targeted cell has not already been attacked. Delegates the
+     * full turn to AttackProcessor, reads the computer's move coordinates back
+     * from the processor, builds human-readable messages for both moves, and
+     * returns an AttackResponseDTO carrying both updated board states.
+     * </p>
+     * <p>
+     * The session object (BattleshipManager) is updated in place after each turn
+     * by calling setHumanDTO and setComputerDTO. The BattleshipManager reference
+     * itself is not replaced.
+     * </p>
+     *
+     * @param request AttackRequestDTO containing row and column of the player's attack
+     * @param session the HTTP session holding the BattleshipManager for this game
+     * @return AttackResponseDTO with both grids, both messages, game status, and
+     *         the computer's move coordinates
+     */
+
     @PostMapping("/attack")
     public AttackResponseDTO attack(@RequestBody AttackRequestDTO request,
                                     HttpSession session) {
@@ -23,13 +45,11 @@ public class BoardController {
         BattleshipManager manager =
                 (BattleshipManager) session.getAttribute("game");
 
-
-        // if attack received, but no game stored, don't process
-        // Note: DTO is not saved, so additional attacks will land here as well
         if (manager == null) {
             return new AttackResponseDTO(
-                    null, 0, "NO_GAME",
+                    null, null, 0, "NO_GAME",
                     "Start a game first",
+                    -1, -1, "",
                     true
             );
         }
@@ -37,57 +57,70 @@ public class BoardController {
         int row = request.row();
         int col = request.column();
 
-        PlayerDTO human = manager.getHumanDTO();
+        PlayerDTO human    = manager.getHumanDTO();
         PlayerDTO computer = manager.getComputerDTO();
 
-        Cell[][] grid = human.grid();
-
-        // invalid attack, return current values other than message and isError boolean
-        //   why grid = null?
-        //    ToDo: define and use a wither
+        // Reject out-of-bounds
         if (row < 0 || row >= 10 || col < 0 || col >= 10) {
             return new AttackResponseDTO(
-                    null,
+                    null, null,
                     human.guessesLeft(),
                     human.gameStatus().name(),
                     "Invalid coordinates",
+                    -1, -1, "",
                     true
             );
         }
 
-        // convertGrid converts the enums to Strings for consumption by client
-        if (grid[row][col] == Cell.HIT || grid[row][col] == Cell.MISS) {
+        // Reject already-attacked cell on the tracking grid
+        Cell[][] trackingGrid = human.grid();
+        if (trackingGrid[row][col] == Cell.HIT || trackingGrid[row][col] == Cell.MISS) {
             return new AttackResponseDTO(
-                    convertGrid(grid),
+                    convertGrid(trackingGrid),
+                    convertGrid(human.homeGrid()),
                     human.guessesLeft(),
                     human.gameStatus().name(),
                     "Cell already attacked",
+                    -1, -1, "",
                     true
             );
         }
 
-        // valid attack ...
-        PlayerDTO[] result =
-                manager.getAttackProcessor()
-                        .processAttack(row, col, human, computer);
+        // Process the full turn (player attack + computer retaliation)
+        AttackProcessor processor = manager.getAttackProcessor();
+        PlayerDTO[] result = processor.processAttack(row, col, human, computer);
 
-        PlayerDTO updatedHuman = result[0];
+        PlayerDTO updatedHuman    = result[0];
         PlayerDTO updatedComputer = result[1];
 
-        // never updates session - session contains a BattleshipManager object
-        //   updates the DTOs inside the object
         manager.setHumanDTO(updatedHuman);
         manager.setComputerDTO(updatedComputer);
 
-
-        String message =
+        // Build player's hit/miss message
+        String playerMessage =
                 updatedHuman.grid()[row][col] == Cell.HIT ? "Hit!" : "Miss!";
+
+        // Build computer's move message (empty string if game ended before computer moved)
+        int compRow = processor.getLastComputerRow();
+        int compCol = processor.getLastComputerCol();
+        String computerMessage = "";
+        if (compRow >= 0) {
+            boolean compHit = updatedHuman.homeGrid()[compRow][compCol] == Cell.HIT;
+            String coord = (char)('A' + compCol) + String.valueOf(compRow + 1);
+            computerMessage = compHit
+                    ? "Computer hit your ship at " + coord + "!"
+                    : "Computer missed at " + coord + ".";
+        }
 
         return new AttackResponseDTO(
                 convertGrid(updatedHuman.grid()),
+                convertGrid(updatedHuman.homeGrid()),
                 updatedHuman.guessesLeft(),
                 updatedHuman.gameStatus().name(),
-                message,
+                playerMessage,
+                compRow,
+                compCol,
+                computerMessage,
                 false
         );
     }
