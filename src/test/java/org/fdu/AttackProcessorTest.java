@@ -153,6 +153,18 @@ class AttackProcessorTest {
     }
 
     @Test
+    @DisplayName("MISS: computer fires and coordinates are recorded")
+    void missRecordsComputerMoveCoordinates() {
+        PlayerDTO human = new PlayerDTO(trackingGrid, homeGrid, 5, GameStatus.IN_PROGRESS);
+        PlayerDTO computer = new PlayerDTO(shipGrid, null, 0, GameStatus.IN_PROGRESS);
+
+        processor.processAttack(0, 0, human, computer);
+
+        assertTrue(processor.getLastComputerRow() >= 0);
+        assertTrue(processor.getLastComputerCol() >= 0);
+    }
+
+    @Test
     @DisplayName("LOSS: status is LOSS when computer sinks the last human ship")
     void computerSinksLastShipSetsLoss() {
         // homeGrid has exactly one SHIP at (5,5), set up in @BeforeEach
@@ -187,5 +199,18 @@ class AttackProcessorTest {
         // lastComputerRow stays -1 because the computer never fired
         assertEquals(-1, processor.getLastComputerRow());
         assertEquals(-1, processor.getLastComputerCol());
+    }
+
+    @Test
+    @DisplayName("LOSS: status is LOSS when player runs out of guesses")
+    void runningOutOfGuessesSetsLoss() {
+        PlayerDTO human = new PlayerDTO(trackingGrid, homeGrid, 1, GameStatus.IN_PROGRESS);
+        PlayerDTO computer = new PlayerDTO(shipGrid, null, 0, GameStatus.IN_PROGRESS);
+
+        PlayerDTO[] result = processor.processAttack(0, 0, human, computer); // miss
+
+        assertEquals(GameStatus.LOSS, result[0].gameStatus());
+        assertEquals(0, result[0].guessesLeft());
+        assertEquals(GameStatus.WIN, result[1].gameStatus());
     }
 }

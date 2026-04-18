@@ -1,14 +1,21 @@
+/* Centers all page content and sets a clean default font */
 body {
     font-family: Arial, sans-serif;
     text-align: center;
 }
+
+/* Adds spacing below the main Battleship title */
 h1 {
     margin-bottom: 20px;
 }
+
+/* Removes gaps between table borders and centers each board */
 table {
     border-collapse: collapse;
     margin: 0 auto;
 }
+
+/* Styles all board cells and header cells with fixed size and borders */
 td, th {
     width: 40px;
     height: 40px;
@@ -16,10 +23,12 @@ td, th {
     border: 1px solid black;
     font-weight: bold;
 }
+
 /* Labels */
 .label {
     background-color: #ddd;
 }
+
 /* Cell States */
 .water {
     background-color: #79afd2;
@@ -32,17 +41,20 @@ td, th {
 .miss {
     background-color: #ecf0f1;
     color: black; }
-/* NEW: ship cell style for human-board, shows the player's own ships */
+
+/* Ship cell style for human-board, shows the player's own ships */
 .ship {
     background-color: #5d8a61;
     color: white;
 }
 
+/* Outline computer's last move with orange*/
 .last-computer-move {
     outline: 3px solid orange;
     outline-offset: -3px;
 }
 
+/* Places both boards side-by-side with spacing */
 .boards-container {
     display: flex;
     justify-content: center;
@@ -50,14 +62,20 @@ td, th {
     flex-wrap: wrap;
     margin-bottom: 20px;
 }
+
+/* Styles section headings above each board */
 .board-section h2 {
     margin-bottom: 10px;
     font-size: 16px;
     color: #333;
 }
 
+/* Shows crosshair cursor for clickable attack cells */
 #computer-board td.water { cursor: crosshair; }
+
+/* Shows blocked cursor for already attacked cells */
 #computer-board td.hit,
 #computer-board td.miss { cursor: not-allowed; }
 
+/* Uses normal cursor on the player's board */
 #human-board td { cursor: default; }

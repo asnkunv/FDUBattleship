@@ -46,9 +46,7 @@ public class AttackProcessor {
      * @return PlayerDTO[] of length 2: [0] updated humanDTO, [1] updated computerDTO
      */
 
-    public PlayerDTO[] processAttack(int row, int col,
-                                     PlayerDTO humanDTO,
-                                     PlayerDTO computerDTO) {
+    public PlayerDTO[] processAttack(int row, int col, PlayerDTO humanDTO, PlayerDTO computerDTO) {
         lastComputerRow = -1;
         lastComputerCol = -1;
 
@@ -74,7 +72,18 @@ public class AttackProcessor {
                 : humanDTO.guessesLeft() - 1;
 
         // ----------------------------------------------------------------
-        // 2. Check if guesses reached 0
+        // Check if the player just won
+        // ----------------------------------------------------------------
+        boolean playerWon = allShipsSunk(newShipGrid);
+        if (playerWon) {
+            PlayerDTO updatedHuman = new PlayerDTO(newTrackingGrid, newHomeGrid, guessesLeft, GameStatus.WIN);
+            PlayerDTO updatedComputer = new PlayerDTO(newShipGrid, null, 0, GameStatus.LOSS);
+            System.out.println("Player wins! All computer ships sunk.");
+            return new PlayerDTO[]{ updatedHuman, updatedComputer };
+        }
+
+        // ----------------------------------------------------------------
+        // Check if guesses reached 0
         // ----------------------------------------------------------------
         if (guessesLeft <= 0) {
             System.out.println("Player ran out of guesses. Computer wins!");
@@ -94,17 +103,6 @@ public class AttackProcessor {
             );
 
             return new PlayerDTO[]{updatedHuman, updatedComputer};
-        }
-
-        // ----------------------------------------------------------------
-        // Check if the player just won
-        // ----------------------------------------------------------------
-        boolean playerWon = allShipsSunk(newShipGrid);
-        if (playerWon) {
-            PlayerDTO updatedHuman = new PlayerDTO(newTrackingGrid, newHomeGrid, guessesLeft, GameStatus.WIN);
-            PlayerDTO updatedComputer = new PlayerDTO(newShipGrid, null, 0, GameStatus.IN_PROGRESS);
-            System.out.println("Player wins! All computer ships sunk.");
-            return new PlayerDTO[]{ updatedHuman, updatedComputer };
         }
 
         // ----------------------------------------------------------------
