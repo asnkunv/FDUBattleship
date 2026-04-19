@@ -245,6 +245,40 @@ class BoardControllerRestTest {
 
     }
 
+    @Test
+    @DisplayName("Computer move coordinates are valid after a normal attack")
+    void computerMoveCoordinatesAreValid() {
+        AttackResponseDTO response = attack(userA, 0, 0);
+        assertThat(response.computerRow()).isBetween(0, 9);
+        assertThat(response.computerCol()).isBetween(0, 9);
+    }
+
+    @Test
+    @DisplayName("Computer message is not empty after a normal attack")
+    void computerMessageIsNotEmptyAfterNormalAttack() {
+        AttackResponseDTO response = attack(userA, 0, 0);
+        assertThat(response.computerMessage()).isNotBlank();
+        assertThat(response.computerMessage())
+                .matches(msg -> msg.contains("hit") || msg.contains("missed"));
+    }
+
+    @Test
+    @DisplayName("Computer message is empty when player wins on that attack")
+    void computerMessageIsEmptyOnPlayerWin() {
+        BattleshipManager manager = getBattleshipManager(userA);
+        PlayerDTO computerStatus = manager.getComputerDTO();
+        manager.clearGrid(computerStatus);
+        manager.placeShip(computerStatus, 2, true, 0, 0);
+        userA.post().uri("/api/battleship/debug/set-manager").body(manager).exchange();
+
+        attack(userA, 0, 0); // hit 1
+        AttackResponseDTO response = attack(userA, 0, 1); // sinks last ship, player wins
+
+        assertThat(response.computerMessage()).isEmpty();
+        assertThat(response.computerRow()).isEqualTo(-1);
+        assertThat(response.computerCol()).isEqualTo(-1);
+    }
+
     // ----------------------   HELPER FUNCTIONS          --------------------------------
     // helper function for setting up the clients -
     private String createSessionCookie(RestTestClient client) {

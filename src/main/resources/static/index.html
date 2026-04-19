@@ -2,160 +2,35 @@
 <html lang ="en">
 <head>
     <title>Battleship Board</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-        }
-        h1 {
-            margin-bottom: 20px;
-        }
-        table {
-            border-collapse: collapse;
-            margin: 0 auto;
-        }
-        td, th {
-            width: 40px;
-            height: 40px;
-            text-align: center;
-            border: 1px solid black;
-            font-weight: bold;
-        }
-        /* Labels */
-        .label {
-            background-color: #ddd;
-        }
-        /* Cell States */
-        .water {
-            background-color: #79afd2;
-            color: white;
-        }
-        .hit {
-            background-color: #e74c3c;
-            color: white;
-        }
-        .miss {
-            background-color: #ecf0f1;
-            color: black; }
-    </style>
+    <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 <h1>BATTLESHIP</h1>
 <p id="version"></p>
-<script>
-    async function loadVersion() {
-        const response = await fetch("api/version");
-        const version = await response.text(); //https://stackoverflow.com/questions/41946457/getting-text-from-fetch-response-object
-        document.getElementById("version").innerText = "Version: " + version;
-    }
-    loadVersion();
-</script>
-<table id="board"></table>
-<h3>Response:</h3>
-<p id="message"></p>
+
+<!--BOARDS -->
+<div class="boards-container">
+    <div class="board-section">
+        <h2>Your Board</h2>
+        <table id="human-board"></table>
+        <h2>Computer's Attack</h2>
+        <p class="board-message" id="computer-message"></p>
+    </div>
+    <div class="board-section">
+        <h2>Computer's Board</h2>
+        <table id="computer-board"></table>
+        <h2>Your attack</h2>
+        <p class="board-message" id="message"></p>
+    </div>
+</div>
+
+<!--Guesses Left label-->
 <h3 id="guesses-left"></h3>
+
+<!-- Feedback Buton -->
 <button id="userFeedbackButton" onclick="handleFeedbackClick()">Submit Game Feedback</button>
-<script>
-    const USER_FEEDBACK_LINK = 'https://docs.google.com/forms/d/e/1FAIpQLSdr2xzx1jbwUW6hDL321aXq4rXhb8n56_qPCpv8hvU4RCcTCA/viewform';
-    function handleFeedbackClick() {
-        window.open(USER_FEEDBACK_LINK, '_blank');
-    }
-    const size = 10;
-    const letters = "ABCDEFGHIJ";
-    let gameOver= false;
 
-    function loadBoard() {
-        const table = document.getElementById('board');
-        table.innerHTML = '';
-        // Top header row (A–J)
-        const headerRow = table.insertRow();
-        headerRow.insertCell(); // empty corner
-        for (let j = 0; j < size; j++) {
-            const th = document.createElement("th");
-            th.textContent = letters[j];
-            th.className = "label";
-            headerRow.appendChild(th);
-        }
-        // Predefined cells for demonstration
-
-        for (let i = 0; i < size; i++) {
-            const row = table.insertRow();
-
-            const labelCell = document.createElement("th");
-            labelCell.textContent = i + 1;
-            labelCell.className = "label";
-            row.appendChild(labelCell);
-            for (let j = 0; j < size; j++) {
-                const cell = row.insertCell();
-                // Default WATER
-                cell.className = "water";
-                cell.textContent = "~";
-
-                cell.onclick = function () {
-                    submitAttack(i, j);
-                };
-            }
-
-        }
-    }
-        function updateBoard(row, col, newState) {
-            const table = document.getElementById("board");
-            const cell = table.rows[row + 1].cells[col + 1];
-
-
-            if (newState === "hit") {
-                cell.className = "hit";
-                cell.textContent = "X";
-            } else {
-                cell.className = "miss";
-                cell.textContent = "O";
-            }
-        }
-        async function submitAttack(row, col) {
-
-            if (gameOver) return;
-
-            const response = await fetch("api/battleship/attack", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ row: row, column: col })
-            });
-
-            const data = await response.json();
-
-            if (data.isError) {
-                document.getElementById("message").innerText="Cell already attacked.";
-                return;
-            }
-
-            const newState = data.grid[row][col];
-            updateBoard(row, col, newState);
-
-            document.getElementById("guesses-left").innerText = `Guesses left: ${data.guessesLeft}`;
-
-            if (data.gameStatus === "IN_PROGRESS") {
-                if (newState === "hit") {
-                    document.getElementById("message").innerText = "Hit!";
-                } else {
-                    document.getElementById("message").innerText = "Miss!";
-                }
-            } else {
-                gameOver = true;
-                if (data.gameStatus === "WIN") {
-                    document.getElementById("message").innerText = "You Won!";
-                } else {
-                    document.getElementById("message").innerText = "You Lose!";
-                }
-            }
-        }
-
-    // Load board on page
-    window.onload = async function () {
-        const response = await fetch("api/battleship/start-game", { method: "POST" });
-        const guessesLeft = await response.json();
-        document.getElementById("guesses-left").innerText = `Guesses left: ${guessesLeft}`;
-        loadBoard();
-    };
-</script>
+<script src="script.js"></script>
 </body>
 </html>
