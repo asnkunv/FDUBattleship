@@ -176,15 +176,6 @@ function renderHumanBoard(homeGrid) {
  * @param {string} tableId  - "computer-board" or "human-board"
  * @param {number[][]} cells - Array of [row, col] pairs for the sunk ship's cells
  */
-// function markSunkCells(tableId, cells) {
-//     const table = document.getElementById(tableId);
-//     for (const [r, c] of cells) {
-//         const cell = table.rows[r + 1].cells[c + 1];
-//         cell.classList.add("sunk");
-//         cell.textContent = "☠";
-//     }
-// }
-
 function markSunkCells(tableId, cells) {
     const table = document.getElementById(tableId);
 
@@ -196,27 +187,6 @@ function markSunkCells(tableId, cells) {
 
     cleanSunkBorders(tableId, cells);
 }
-
-// function cleanSunkBorders(tableId, cells) {
-//     const table = document.getElementById(tableId);
-//     const set = new Set(cells.map(([r, c]) => `${r},${c}`));
-//
-//     for (const [r, c] of cells) {
-//         const cell = table.rows[r + 1].cells[c + 1];
-//
-//         // Reset all sides to yellow outer glow border first
-//         cell.style.borderTop    = "2px solid #f1c40f";
-//         cell.style.borderBottom = "2px solid #f1c40f";
-//         cell.style.borderLeft   = "2px solid #f1c40f";
-//         cell.style.borderRight  = "2px solid #f1c40f";
-//
-//         // Kill shared inner edges between sunk cells
-//         if (set.has(`${r - 1},${c}`)) cell.style.borderTop    = "1px solid #333";
-//         if (set.has(`${r + 1},${c}`)) cell.style.borderBottom = "1px solid #333";
-//         if (set.has(`${r},${c - 1}`)) cell.style.borderLeft   = "1px solid #333";
-//         if (set.has(`${r},${c + 1}`)) cell.style.borderRight  = "1px solid #333";
-//     }
-// }
 
 function cleanSunkBorders(tableId, cells) {
     const table = document.getElementById(tableId);
