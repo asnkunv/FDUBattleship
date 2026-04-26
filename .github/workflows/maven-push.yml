@@ -26,22 +26,26 @@ jobs:
         run: mvn -B clean verify checkstyle:checkstyle spotbugs:spotbugs pmd:pmd
 
       - name: Publish Checkstyle
+        if: always()
         uses: jwgmeligmeyling/checkstyle-github-action@master
         with:
           path: '**/checkstyle-result.xml'
 
       - name: Publish SpotBugs
+        if: always()
         uses: jwgmeligmeyling/spotbugs-github-action@master
         with:
           path: '**/spotbugsXml.xml'
-          
+
       - name: Publish PMD
+        if: always()
         uses: jwgmeligmeyling/pmd-github-action@master
         with:
           path: '**/pmd.xml'
   
       # Upload the compiled JAR as a downloadable artifact
       - name: Upload JAR file
+        if: always()
         uses: actions/upload-artifact@v6
         with:
           name: battleship-jar
