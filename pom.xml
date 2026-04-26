@@ -104,8 +104,10 @@
             <ruleset>/category/java/errorprone.xml</ruleset>
             <ruleset>/category/java/performance.xml</ruleset>
           </rulesets>
-          <failOnViolation>true</failOnViolation>
+          <failOnError>true</failOnError>
           <linkXRef>false</linkXRef>
+          <htmlOutput>true</htmlOutput>
+          <xmlOutput>true</xmlOutput>
         </configuration>
         <executions>
           <execution>
@@ -127,6 +129,8 @@
           <encoding>UTF-8</encoding>
           <failOnViolation>true</failOnViolation>
           <linkXRef>false</linkXRef>
+          <htmlOutput>true</htmlOutput>
+          <xmlOutput>true</xmlOutput>
         </configuration>
         <executions>
           <execution>
@@ -152,7 +156,6 @@
         <version>4.9.8.3</version>
         <configuration>
           <failOnError>true</failOnError>
-          <failOnViolation>true</failOnViolation>
           <htmlOutput>true</htmlOutput>
           <xmlOutput>true</xmlOutput>
         </configuration>
