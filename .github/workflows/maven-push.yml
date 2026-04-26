@@ -26,18 +26,21 @@ jobs:
         run: |
           mvn -B clean verify checkstyle:checkstyle spotbugs:spotbugs pmd:pmd pmd:cpd
 
+      #Checkstyle Annotations
       - name: Publish Checkstyle
         if: always()
         uses: jwgmeligmeyling/checkstyle-github-action@master
         with:
           path: '**/checkstyle-result.xml'
 
+      #SpotBugs Annotations 
       - name: Publish SpotBugs
         if: always()
         uses: jwgmeligmeyling/spotbugs-github-action@master
         with:
           path: '**/spotbugsXml.xml'
 
+      #PMD Annotations
       - name: Publish PMD
         if: always()
         uses: jwgmeligmeyling/pmd-github-action@master
@@ -52,10 +55,6 @@ jobs:
           name: battleship-jar
           path: target/*.jar
 
-      - name: Debug - List target directory
-        if: always()
-        run: find target -type f -name "*.html" -o -name "*.xml" | sort
-
       #UPLOAD ALL ANALYSIS ARTIFACT
       - name: Upload Analysis Report
         if: always()
@@ -63,6 +62,7 @@ jobs:
         with:
           name: Analysis report
           path: |
+            target/site/jacoco/
             target/reports/pmd.html
             target/reports/cpd.html
             target/reports/checkstyle.html
