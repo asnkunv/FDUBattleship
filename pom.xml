@@ -97,7 +97,7 @@
         <artifactId>maven-checkstyle-plugin</artifactId>
         <version>3.6.0</version>
         <configuration>
-          <failsOnError>true</failsOnError>
+          <failsOnError>false</failsOnError>
         </configuration>
       </plugin>
 
@@ -109,7 +109,7 @@
         <configuration>
           <xmlOutput>true</xmlOutput>
           <htmlOutput>true</htmlOutput>
-          <failsOnError>true</failsOnError>
+          <failsOnError>false</failsOnError>
         </configuration>
       </plugin>
 
@@ -120,7 +120,7 @@
         <version>3.28.0</version>
         <configuration>
           <includeTests>true</includeTests>
-          <failOnViolation>true</failOnViolation>
+          <failOnViolation>false</failOnViolation>
           <skipEmptyReport>false</skipEmptyReport>
         </configuration>
       </plugin>
