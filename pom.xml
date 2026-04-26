@@ -109,7 +109,7 @@
         <configuration>
           <xmlOutput>true</xmlOutput>
           <htmlOutput>true</htmlOutput>
-          <failOnError>true</failOnError>
+          <failsOnError>true</failsOnError>
         </configuration>
       </plugin>
 
