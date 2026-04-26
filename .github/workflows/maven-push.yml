@@ -23,7 +23,8 @@ jobs:
           cache: "maven"
 
       - name: Build and Test with Maven
-        run: mvn -B clean verify checkstyle:checkstyle spotbugs:spotbugs pmd:pmd
+        run: |
+          mvn -B clean verify checkstyle:checkstyle spotbugs:spotbugs pmd:pmd pmd:cpd
 
       - name: Publish Checkstyle
         if: always()
@@ -66,5 +67,6 @@ jobs:
             target/reports/cpd.html
             target/reports/checkstyle.html
             target/site/spotbugs.html
-            taget/spotbugsXml.html
-            target/spotbugs.html
+
+      - name: Enforce Quality Gates
+        run: mvn -B checkstyle:check spotbugs:check pmd:check pmd:cpd-check
