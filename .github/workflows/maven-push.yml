@@ -22,19 +22,23 @@ jobs:
           distribution: "temurin"
           cache: "maven"
 
-      # Run all automated tests
       - name: Build and Test with Maven
         run: mvn -B clean verify checkstyle:checkstyle spotbugs:spotbugs pmd:pmd
-      - uses: jwgmeligmeyling/checkstyle-github-action@master
+
+      - name: Publish Checkstyle
+        uses: jwgmeligmeyling/checkstyle-github-action@master
         with:
           path: '**/checkstyle-result.xml'
-      - uses: jwgmeligmeyling/spotbugs-github-action@master
+
+      - name: Publish SpotBugs
+        uses: jwgmeligmeyling/spotbugs-github-action@master
         with:
           path: '**/spotbugsXml.xml'
-      - uses: jwgmeligmeyling/pmd-github-action@master
+          
+      - name: Publish PMD
+        uses: jwgmeligmeyling/pmd-github-action@master
         with:
           path: '**/pmd.xml'
-      
   
       # Upload the compiled JAR as a downloadable artifact
       - name: Upload JAR file
@@ -58,3 +62,5 @@ jobs:
             target/reports/cpd.html
             target/reports/checkstyle.html
             target/site/spotbugs.html
+            taget/spotbugsXml.html
+            target/spotbugs.html
