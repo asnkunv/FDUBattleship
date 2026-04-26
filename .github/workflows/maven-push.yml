@@ -70,6 +70,10 @@ jobs:
           name: battleship-jar
           path: target/*.jar
 
+      - name: Debug - List target directory
+        if: always()
+        run: find target -type f -name "*.html" -o -name "*.xml" | sort
+
       #UPLOAD ALL ANALYSIS ARTIFACT
       - name: Upload Analysis Report
         if: always()
