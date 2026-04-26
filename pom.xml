@@ -98,6 +98,7 @@
         <version>3.6.0</version>
         <configuration>
           <failsOnError>false</failsOnError>
+          <linkXRef>false</linkXRef>
         </configuration>
       </plugin>
 
@@ -109,7 +110,7 @@
         <configuration>
           <xmlOutput>true</xmlOutput>
           <htmlOutput>true</htmlOutput>
-          <failsOnError>false</failsOnError>
+          <failOnError>false</failOnError>
         </configuration>
       </plugin>
 
@@ -122,6 +123,7 @@
           <includeTests>true</includeTests>
           <failOnViolation>false</failOnViolation>
           <skipEmptyReport>false</skipEmptyReport>
+          <linkXRef>false</linkXRef>
         </configuration>
       </plugin>
 
