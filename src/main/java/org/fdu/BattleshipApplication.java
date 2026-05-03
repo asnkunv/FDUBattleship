@@ -1,5 +1,5 @@
 /**
- * Battleship application package.
+ * Battleship application package.sfse
  */
 package org.fdu;
 
