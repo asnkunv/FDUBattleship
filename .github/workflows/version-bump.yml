@@ -46,6 +46,13 @@ jobs:
           BRANCH="${{ github.event.pull_request.head.ref }}"
           echo "storyid=$(echo "$BRANCH" | grep -oE "DEVOPS-[0-9]+")" >> $GITHUB_OUTPUT
 
+      - name: Set up JDK 21
+        uses: actions/setup-java@v5
+        with:
+          java-version: "21"
+          distribution: "temurin"
+          cache: "maven"
+
       # Use the bump type determined above to increment the version in pom.xml.
       # The action handles updating the version, committing, and pushing back to master automatically.
       - name: Bump pom.xml version
