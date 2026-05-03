@@ -15,7 +15,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           fetch-depth: 0
@@ -34,7 +34,7 @@ jobs:
 
       - name: Bump pom.xml version
         id: bump
-        uses: nnichols/maven-version-bump-action@v3
+        uses: nnichols/maven-version-bump-action@v5
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           type: ${{ steps.label.outputs.type }}
