@@ -73,6 +73,10 @@ jobs:
       - name: Print new version
         run: echo "Bumped to version ${{ steps.bump.outputs.version }}-${{ steps.storyid.outputs.storyid }}"
 
+      # Fetch latest master so force_with_lease does not reject the push as stale
+      - name: Fetch latest master
+        run: git fetch origin master
+        
       #https://github.com/marketplace/actions/github-action-for-committing-changes-to-a-repository
       - name: Amend and Push
         uses: devops-infra/action-commit-push@v1.1.0
