@@ -7,7 +7,7 @@ import org.apache.logging.log4j.internal.annotation.SuppressFBWarnings;
  * <p>
  * Carries the full state of both boards plus descriptive messages for both
  * the player's move and the computer's retaliatory move. The frontend uses
- * this single response to update both board displays simultaneously after
+ * this single response to update both board displays simultaneously after yes
  * every turn.
  * </p>
  * <p>
