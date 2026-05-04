@@ -21,9 +21,9 @@ jobs:
         uses: actions/checkout@v6
         with:
           # Pass the token so the workflow has write access to push the version bump commit back to master.
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.GH_PAT }}
           #Needed for force_with_lease which the documentation recommends
-          # and I think it lets it see the previous commit to ammend
+          # and I think it lets it see the previous commit to amend
           fetch-depth: 0
 
       # Read the labels on the merged PR and decide whether this is a major, minor, or patch bump.
@@ -60,7 +60,7 @@ jobs:
         uses: nnichols/maven-version-bump-action@v5
         with:
           # Token required for the action to commit and push the pom.xml change.
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.GH_PAT }}
           # Pass the bump type (major/minor/patch) from the label step.
           type: ${{ steps.label.outputs.type }}
 
@@ -73,15 +73,15 @@ jobs:
       - name: Print new version
         run: echo "Bumped to version ${{ steps.bump.outputs.version }}-${{ steps.storyid.outputs.storyid }}"
 
-      # Fetch latest master so force_with_lease does not reject the push as stale
+      # Fetch latest master so force_with_lease does not reject the push
       - name: Fetch latest master
         run: git fetch origin master
-        
+
       #https://github.com/marketplace/actions/github-action-for-committing-changes-to-a-repository
       - name: Amend and Push
         uses: devops-infra/action-commit-push@v1.1.0
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          github_token: ${{ secrets.GH_PAT }}
           commit_message: "Bump version to ${{ steps.bump.outputs.version }}-${{ steps.storyid.outputs.storyid }}"
           amend: true
           force_with_lease: true
@@ -92,4 +92,4 @@ jobs:
         with:
           tag_name: v${{ steps.bump.outputs.version }}-${{ steps.storyid.outputs.storyid }}
           name: v${{ steps.bump.outputs.version }}-${{ steps.storyid.outputs.storyid }}
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.GH_PAT }}
